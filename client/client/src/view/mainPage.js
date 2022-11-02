@@ -25,6 +25,7 @@ function MainPage() {
       <div>
         {messsage}<br/>
         <Link to='/busInfo'><button>Tour 예약</button></Link>
+        <Link to='/purchaseInfo'><button>구매내역 확인</button></Link>
       </div>
   )
 }

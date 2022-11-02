@@ -1,0 +1,36 @@
+###
+// purchase 추가하는 test
+POST http://127.0.0.1:5000/server/purchaseInfo
+Content-Type: application/json
+
+{
+  "id": 12345,
+  "customer": {
+    "id": 77,
+    "Name": "조광호",
+    "phoneNumber": "010-9999-9999",
+    "email": "test@naver.com"
+  }
+}
+
+###
+POST http://127.0.0.1:5000/server/purchaseInfo
+Content-Type: application/json
+
+{
+  "id": 43,
+  "customer": {
+    "id": 737,
+    "Name": "이희준",
+    "phoneNumber": "010-1111-1111",
+    "email": "testtest@naver.com"
+  }
+}
+
+###
+GET http://127.0.0.1:5000/server/purchaseInfo/12345
+Accept: application/json
+
+###
+GET http://127.0.0.1:5000/server/purchaseInfo/43
+Accept: application/json
