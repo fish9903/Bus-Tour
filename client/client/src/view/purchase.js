@@ -17,6 +17,7 @@ function Purchase() {
       } else {
         const str = JSON.stringify(res.data);
         const arr = JSON.parse(str);
+        window.alert(str);
         //setPurchaseId(arr);
       }
 
