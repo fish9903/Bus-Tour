@@ -3,7 +3,9 @@ package com.example.entity
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 /**
  * 데이터베이스가 정상적으로 연결되었는지 평가하기 위한 단순한 함수.
@@ -19,12 +21,12 @@ fun dbTest(id: String, password: String, dbname: String)
         user = "$id", password = "$password"
     )
 
-//    transaction {
-//        SchemaUtils.drop(Orders, PersonInfos)
-//        SchemaUtils.create(Orders, PersonInfos)
-//
+    transaction {
+        SchemaUtils.drop(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
+        SchemaUtils.create(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
+    }
 //        val order = OrderEntity.new {
-//            ordered_date = LocalDate.now()
+//            ordered_date = LocalDateTime.now()
 //            state = "ok"
 //            QRCode = "https://www.naver.com"
 //        }
@@ -45,9 +47,9 @@ fun dbTest(id: String, password: String, dbname: String)
 //        }
 //    }
 
-    transaction {
-        val order = OrderEntity.all().first().getOrder()
-        val jsonOrder = Json.encodeToString(order) // json으로 반환하는 방법
-        println(jsonOrder)
-    }
+//    transaction {
+//        val order = OrderEntity.all().first().getOrder()
+//        val jsonOrder = Json.encodeToString(order) // json으로 반환하는 방법
+//        println(jsonOrder)
+//    }
 }
