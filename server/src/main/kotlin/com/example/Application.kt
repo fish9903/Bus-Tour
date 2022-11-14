@@ -4,8 +4,9 @@ import com.example.entity.dbTest
 import io.ktor.server.application.*
 import com.example.plugins.*
 
+// password는 비밀
 fun main(args: Array<String>){
-    dbTest("id","password", "test")
+    dbTest("admin","", "test")
 //    io.ktor.server.netty.EngineMain.main(args)
 }
 
