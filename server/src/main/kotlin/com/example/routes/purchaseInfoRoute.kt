@@ -1,4 +1,3 @@
-import com.example.models.Customer
 import com.example.models.Purchase
 import com.example.models.purchaseStorage
 import io.ktor.http.*
