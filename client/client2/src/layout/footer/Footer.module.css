@@ -1,0 +1,10 @@
+.footer {
+    background-color: rgb(32, 137, 241);
+    width:100%;
+
+    padding: 1rem 70px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2rem;
+}

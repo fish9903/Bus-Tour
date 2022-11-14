@@ -1,0 +1,10 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+
+    --media-size: 600px;
+}
+
+/* body {
+    overflow: hidden;
+} */

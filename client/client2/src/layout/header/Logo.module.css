@@ -1,0 +1,19 @@
+.logo_default {
+
+}
+
+.logo_image {
+    width: 180px;
+}
+
+.logo {
+    text-decoration: none !important;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+}
+
+.logo_text {
+    padding-bottom: 20px;
+    color:rgb(6, 39, 223);
+}

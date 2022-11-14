@@ -1,0 +1,38 @@
+.item {
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1.2rem;
+    text-decoration: none;
+    color:black;
+    border: gray solid 2px;
+    padding: 1rem;
+    /* width: min-content;  */
+    justify-content: flex-start;
+    align-items: center;
+}
+
+@media (width < 1000px) {
+    .item{
+        flex-flow: row nowrap;
+        min-width: 450px;
+    }
+}
+
+.item:is(:hover,:active) {
+    border-color: goldenrod;
+    animation: name-up ;
+}
+
+.thumbnail {
+    --thumbnail-size: 200px;
+    width: var(--thumbnail-size);
+    height: var(--thumbnail-size);
+    object-fit: cover;
+}
+
+.item-info {
+    display: flex;
+    gap: 1rem;
+    flex-flow: column wrap;
+    padding: 1.5rem 0;
+}
