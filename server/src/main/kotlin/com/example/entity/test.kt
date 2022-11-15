@@ -21,10 +21,10 @@ fun dbTest(id: String, password: String, dbname: String)
         user = "$id", password = "$password"
     )
 
-    transaction {
-        SchemaUtils.drop(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
-        SchemaUtils.create(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
-    }
+//    transaction {
+//        SchemaUtils.drop(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
+//        SchemaUtils.create(Orders, Personinfos, Programs, Users, Courses, Priceinfos)
+//    }
 //        val order = OrderEntity.new {
 //            ordered_date = LocalDateTime.now()
 //            state = "ok"
