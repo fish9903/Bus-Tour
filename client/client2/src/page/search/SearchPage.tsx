@@ -6,6 +6,7 @@ import { fakeNetwork } from "../../fakenet";
 import styles from './SearchPage.module.css';
 import axios from 'axios';
 import { CourseWithThumbnail } from "../../interface/Course.interface";
+import { useLayoutEffect } from "react";
 
 // loader의 return type 지정
 // useLoaderData는 어차피 unknown으로 되어 있어서 바꿔도 의미 없음.
@@ -30,6 +31,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 const SearchPage: React.FC = (props) => {
     const { data, q } = useLoaderData() as Ret;
     const navigation = useNavigation(); // 로딩 중 띄우는 용도
+
+    useLayoutEffect(() => {
+        const d = document.getElementById('q') as HTMLInputElement;
+        d.value = q;
+    }, [q]);
 
     return (
         <div className={styles['page-layout']}>

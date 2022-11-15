@@ -1,32 +1,49 @@
 import {createBrowserRouter} from 'react-router-dom';
+import ErrorState from './layout/ErrorState';
 import Layout from './layout/Layout';
 import CheckPage from './page/check/CheckPage';
 import DetailPage, {loader as DetailPageLoader} from './page/detail[id]/DetailPage';
+import ErrorPage from './page/error/ErrorPage';
 import MainPage from './page/main/MainPage';
+import PurchasePage,{loader as PurchasePageLoader} from './page/purchase[id]/PurchasePage';
 import SearchPage, {loader as SearchPageLoader} from './page/search/SearchPage';
 
 const browserRouter = createBrowserRouter([
     {
-      path: '/',
       element: <Layout/>,
+      errorElement: <ErrorState/>,
       children: [
         {
-          path: '',
-          element:<MainPage/>
-        },
-        {
-          path: 'search',
-          element:<SearchPage/>,
-          loader: SearchPageLoader
-        },
-        {
-          path: 'check',
-          element:<CheckPage/>
-        },
-        {
-          path: 'detail/:id',
-          element:<DetailPage/>,
-          loader: DetailPageLoader
+          path:'',
+          children: [
+            {
+              path: '',
+              element:<MainPage/>
+            },
+            {
+              path: 'search',
+              element:<SearchPage/>,
+              loader: SearchPageLoader
+            },
+            {
+              path: 'check',
+              element:<CheckPage/>
+            },
+            {
+              path: 'detail/:id',
+              element:<DetailPage/>,
+              loader: DetailPageLoader
+            },
+            {
+              path: 'purchase/:id',
+              element:<PurchasePage/>,
+              loader: PurchasePageLoader
+            },
+            {
+              path: 'error',
+              element:<ErrorPage/>
+            }
+          ]
         }
       ]
     }

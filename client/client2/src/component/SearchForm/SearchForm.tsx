@@ -1,6 +1,6 @@
 import { Form } from "react-router-dom";
 import styles from './SearchForm.module.css';
-const SearchForm: React.FC = (props) => {
+const SearchForm: React.FC<{init?: string}> = (props) => {
     return (
         <Form
             className={styles['search-form']}
@@ -8,7 +8,7 @@ const SearchForm: React.FC = (props) => {
             role='search'
             method='get'>
             <input className={styles['search-input']}
-                id='query'
+                id='q'
                 aria-label='search travel list'
                 type='search'
                 name='q'

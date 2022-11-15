@@ -14,6 +14,7 @@
 }
 
 .logo_text {
+    font-weight: 900;
     padding-bottom: 20px;
-    color:rgb(6, 39, 223);
+    color:rgb(0, 129, 214);
 }

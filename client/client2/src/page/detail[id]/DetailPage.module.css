@@ -1,0 +1,90 @@
+.page-layout {
+    width: 100%;
+    padding: 0 200px;
+    min-width:min-content;
+}
+
+.desc-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+        "thumbnail costt"
+        "thumbnail timet"
+        "sdesc sdesc";
+    gap: 3rem;
+
+}
+
+.thumbnail {
+    --thumbnail-size: 240px;
+    width: var(--thumbnail-size);
+    height: var(--thumbnail-size);
+    object-fit: cover;
+
+    grid-area: thumbnail;
+}
+
+.header {
+    grid-area: header;
+}
+
+.cost-table {
+    grid-area: costt;
+    height: min-content;
+}
+
+.time-table {
+    grid-area: timet;
+    height: min-content;
+}
+
+.description {
+    margin: 3rem 0;
+    grid-area: desc;
+    width: 100%;
+}
+
+.desc-text {
+    --border-style: 2px rgb(173, 173, 173) solid;
+    border-top: var(--border-style);
+    border-bottom: var(--border-style);
+    padding: 1rem;
+}
+
+.short-desc {
+    grid-area: sdesc;
+}
+
+.headline {
+    margin-bottom: 2rem;
+}
+
+
+.purchase-button {
+    text-align: center;
+    display: block;
+    padding: 10px 5px;
+    border:2px gray solid;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    background-color: white;
+    color:gray;
+    min-width:fit-content;
+    width: 40vw;
+}
+
+.purchase-button:is(:hover, :active) {
+    border-color:black;
+    color: black;
+}
+
+.purchase-info {
+    margin: 2.5rem 0 4rem 0;
+    display:flex;
+    justify-content: center;
+    /* --border-style: 2px gray solid;
+    border-top: var(--border-style);
+    border-bottom: var(--border-style); */
+
+}

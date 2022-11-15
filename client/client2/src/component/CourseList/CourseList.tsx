@@ -1,4 +1,5 @@
-import CourseItem, { CourseWithThumbnail } from './CourseItem';
+import { CourseWithThumbnail } from '../../interface/Course.interface';
+import CourseItem from './CourseItem';
 import styles from './CourseList.module.css';
 const CourseList: React.FC<{ list: CourseWithThumbnail[] }> = (props) => {
     return (
