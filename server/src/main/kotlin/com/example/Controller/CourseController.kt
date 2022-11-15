@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CourseController {
-    // 썸내일과 함께 반환
+    // 썸네일과 함께 반환
     fun getAllwithThumbnail(): Iterable<CourseWithThumbnail> = transaction {
         CourseEntity.all().map(CourseEntity::getCourseWithThumbnail)
     }

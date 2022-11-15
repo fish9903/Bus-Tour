@@ -32,5 +32,9 @@ GET http://127.0.0.1:5000/server/purchaseInfo/12345
 Accept: application/json
 
 ###
+GET http://127.0.0.1:5000/server/busInfo
+Accept: application/json
+
+###
 GET http://127.0.0.1:5000/server/purchaseInfo/43
 Accept: application/json

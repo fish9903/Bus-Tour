@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 fun dbTest(id: String, password: String, dbname: String)
 {
     Database.connect(
-        "jdbc:mysql://bustour.cpimteab28le.us-east-1.rds.amazonaws.com:3306/$dbname", "com.mysql.cj.jdbc.Driver",
+        "jdbc:mysql://bustour.ca8hxrwztdze.ap-northeast-2.rds.amazonaws.com:3306/$dbname", "com.mysql.cj.jdbc.Driver",
         user = "$id", password = "$password"
     )
 

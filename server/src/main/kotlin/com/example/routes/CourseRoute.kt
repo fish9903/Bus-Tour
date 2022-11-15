@@ -12,7 +12,7 @@ fun Route.courseRoute() {
     val courseController by closestDI().instance<CourseController>()
 
     get("/") {
-        call.respondRedirect("server/")
+        call.respondRedirect("server")
     }
 
     route("server") {
