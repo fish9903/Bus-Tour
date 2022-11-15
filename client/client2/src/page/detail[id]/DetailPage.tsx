@@ -16,11 +16,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 const DetailPage: React.FC = (props) => {
     const data = useLoaderData() as Ret;
-    const navigation = useNavigation(); // 로딩 중 띄우는 용도
+
 
     return (
         <div>
-            search page!
             <div>{}</div> 
         </div>
     )

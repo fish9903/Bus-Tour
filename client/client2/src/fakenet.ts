@@ -1,16 +1,12 @@
+import { CourseWithThumbnail } from "./interface/Course.interface";
+
 let fakeCache = new Map<string, boolean>();
 
 const cities = ['서울', '경상도 대구', '경상도 부산', '경상도 울산', '전라도 전주',
   '전라도 광주', '전라도 여수', '경기도 파주', '경기도 고양', '강원도 강릉', '강원도 속초'];
 
-export interface CourseItemProps {
-  id: number;
-  thumbnail: string;
-  name: string;
-  short_desc: string;
-}
 
-const createData = (cities: string[]): CourseItemProps[] => {
+const createData = (cities: string[]): CourseWithThumbnail[] => {
   let id = 0;
   const arr = cities.map(
     name => {
@@ -26,7 +22,7 @@ const createData = (cities: string[]): CourseItemProps[] => {
   return arr;
 }
 
-export async function fakeNetwork(key: string) : Promise<CourseItemProps[]> {
+export async function fakeNetwork(key: string) : Promise<CourseWithThumbnail[]> {
   // // if (!key) {
   // //   fakeCache = {};
   // // }

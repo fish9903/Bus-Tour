@@ -1,6 +1,6 @@
-import CourseItem, { CourseItemProps } from './CourseItem';
+import CourseItem, { CourseWithThumbnail } from './CourseItem';
 import styles from './CourseList.module.css';
-const CourseList: React.FC<{ list: CourseItemProps[] }> = (props) => {
+const CourseList: React.FC<{ list: CourseWithThumbnail[] }> = (props) => {
     return (
         <section className={styles['course-list']}>
             <h2 className={styles['title']}>여행지 목록</h2>
