@@ -1,0 +1,19 @@
+.page-layout {
+    display: flex;
+    flex-flow: column wrap;
+    width:100%;
+
+    gap: 1rem;
+    padding: 0 100px;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.purchase-form {
+    width: 100%;
+}
+
+.flex-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}

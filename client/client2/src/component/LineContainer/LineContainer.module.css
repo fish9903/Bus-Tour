@@ -1,0 +1,31 @@
+
+.lc {
+    width:100%;
+}
+
+.title {
+    align-self: flex-start;
+    margin: 0;
+}
+
+.line {
+    --margin: 25px;
+    margin-top:10px;
+
+    border-top: 2px gray solid;
+    margin-bottom: var(--margin);
+    padding-top: var(--margin);
+    padding-left: var(--margin);
+}
+
+.lcc {
+    display: grid;
+    gap: 0.3rem;
+    grid-template-columns: repeat(2, 1fr);
+
+    max-width: fit-content;
+}
+
+/* .lcc:nth-child(odd) {
+    text-align: center;
+} */

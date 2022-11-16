@@ -75,14 +75,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 const DetailPage: React.FC = (props) => {
     const data = useLoaderData() as Ret;
     const timetr = useMemo(() => data.programs.map(
-        it => <tr>
+        it => <tr key={it.id}>
             <td>{it.dep_date.toLocaleString('ko-KR', dateOptions)}</td>
             <td>{it.ariv_date.toLocaleString('ko-KR', dateOptions)}</td>
         </tr>
     ), [data.programs]);
 
     const costtr = useMemo(() => data.priceinfos.map(
-        it => <tr>
+        it => <tr key={it.type}>
             <td>{it.type}</td>
             <td>{it.price}</td>
         </tr>
