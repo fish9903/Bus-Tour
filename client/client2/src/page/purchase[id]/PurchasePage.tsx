@@ -1,68 +1,17 @@
-import { Form, LoaderFunction, redirect, useLoaderData } from "react-router-dom";
-import { useMemo, useState, useEffect, useCallback, Fragment } from "react";
+import { Form, LoaderFunction, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import React, { useMemo, useState, useEffect, useCallback, Fragment } from "react";
 
 import styles from './PurchasePage.module.css';
 import HeadLine from "../../component/Headline/HeadLine";
 import LineContainer from "../../component/LineContainer/LineContainer";
-import { CourseWithPrograms } from "../../interface/Course.interface";
+import { ICourseWithPrograms } from "../../interface/Course.interface";
 import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
+import Spinner from "../../component/Spinner/Spinner";
+import { useSpinner } from "../../hooks/useSpinner";
+import { mockprogram } from "../../fakenet";
 
-const program: CourseWithPrograms = {
-    id: 1,
-    name: "강원도 속초",
-    short_desc: "아름다운 강원도 속초로 놀러오세요~",
-    thumbnail: "/ugly_cat.jpg",
-    description: `A paragraph with *emphasis* and **strong importance**.
-
-    > A block quote with ~strikethrough~ and a URL: https://reactjs.org.
-    
-    * Lists
-    * [ ] todo
-    * [x] done
-    
-    A table:
-    
-    | a | b |
-    | - | - |
-    `,
-    programs: [
-        {
-            id: 1,
-            ariv_date: new Date('2022-10-11'),
-            dep_date: new Date('2022-10-10'),
-            state: "ok",
-            max_count: 41,
-            rem_count: 14,
-            cid: 1,
-        },
-        {
-            id: 2,
-            ariv_date: new Date('2022-10-12'),
-            dep_date: new Date('2022-10-11'),
-            state: "ok",
-            max_count: 42,
-            rem_count: 16,
-            cid: 1,
-        },
-        {
-            id: 3,
-            ariv_date: new Date('2022-10-13'),
-            dep_date: new Date('2022-10-12'),
-            state: "ok",
-            max_count: 44,
-            rem_count: 22,
-            cid: 1,
-        }
-    ],
-    priceinfos: [
-        { price: 5000, type: "p1" },
-        { price: 7500, type: "p2" },
-        { price: 10000, type: "p3" },
-    ]
-}
-
-interface Ret extends CourseWithPrograms { }
+interface Ret extends ICourseWithPrograms { }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const id = params['id'];
@@ -70,14 +19,23 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         redirect('error');
     }
 
-    return program;
+    return mockprogram;
 }
+
+// export const action: ActionFunction = async ({ request, params }) => {
+//     const formData = await request.formData();
+//     const data_list = Object.fromEntries(formData);
+//     console.log(data_list);
+
+//     return redirect('/', {});
+// }
 
 const PurchasePage: React.FC = () => {
     const data = useLoaderData() as Ret;
+    const navigate = useNavigate();
+    const {active, turnOn,turnOff} = useSpinner();
 
     const [id, setId] = useState<string>("");
-
     const [values, setValues] = useState<number[]>(() => {
         const arr: number[] = [];
         for (let a = 0; a < data.priceinfos.length; a++) {
@@ -92,7 +50,7 @@ const PurchasePage: React.FC = () => {
             arr.push(it.price);
         })
         return arr;
-    },[data.priceinfos]);
+    }, [data.priceinfos]);
 
     const [cost, setCost] = useState(0);
 
@@ -144,8 +102,12 @@ const PurchasePage: React.FC = () => {
                 min='0'
                 id={it.type}
                 name={it.type}
-                disabled={id===''}
+                disabled={id === ''}
                 value={values[idx]}
+                onKeyDown={(e) => {
+                    e.preventDefault();
+                    return false;
+                }}
                 onChange={(e) => {
                     setValues((prev) => {
                         const cur = [...prev];
@@ -157,11 +119,28 @@ const PurchasePage: React.FC = () => {
         return value;
     }), [data.priceinfos, values, id])
 
+    const submitController : React.FormEventHandler<HTMLFormElement> = (e) => {
+        e.preventDefault(); // 제출하는거 일단 막기
+        turnOn();
+        const formdata = new FormData(e.currentTarget); //form data 추출
+        const datalist = Object.fromEntries(formdata); // 추출한 데이터를 객체로 변환
+        console.log(datalist);//  출력
+        // 이후 axios로 동작 요청하고, 다른 작업 가능
+        turnOff();    
+        // -> 주문 id 나옴
+        const orderid = 13;
+        navigate(`/confirm/${orderid}`,{replace: true});
+    }
+
     return (
         <div className={styles['page-layout']}>
             <HeadLine content="예약" />
-
-            <Form className={styles['purchase-form']}>
+            <Form className={styles['purchase-form']}
+                method='post'
+            // action='/server/purchase'
+            // action 명시하면 대응되는 주소에 가서 작업 하는 것으로 보임.
+            onSubmit={submitController}
+            >
                 <LineContainer title="상품 정보">
                     <div>상품 이름</div>
                     <div>{data.name}</div>
@@ -172,17 +151,12 @@ const PurchasePage: React.FC = () => {
                             name='id'
                             id='id'
                             value={id}
-                            onChange={
-                                (e) => {
-                                    setId((e.target.value))
-                                }
-                            }>
+                            onChange={(e) => { setId((e.target.value)) }}>
                             <option value="" disabled>세부 기간 선택</option>
                             {option_table}
                         </select>
                         <div>{`전체 좌석 ${full_seat > 0 ? full_seat : '-'}개`}</div>
                         <div>{`남은 좌석 ${remain_seat > 0 ? remain_seat : '-'}개`}</div>
-
                     </div>
                     <div>인원</div>
                     <div className={styles['flex-col']}>
@@ -197,9 +171,25 @@ const PurchasePage: React.FC = () => {
                     <div>{cvalid ? cost : 0}원</div>
                 </LineContainer>
                 <LineContainer title="고객 정보">
+                    <label htmlFor="username">구매자 이름</label>
+                    <input type='text'
+                        id="username"
+                        name="username"
+                        placeholder="성함" />
+                    <label htmlFor="pnumber">휴대폰 번호</label>
+                    <input type='text'
+                        id="pnumber"
+                        name="pnumber"
+                        placeholder="-을 빼고 입력하세요" />
+                    <label htmlFor="cardinfo">결제수단 정보</label>
+                    <input type='text'
+                        id="cardinfo"
+                        name="cardinfo"
+                        placeholder="-을 빼고 입력하세요" />
 
                 </LineContainer>
-                <button type='submit'></button>
+                {!active && <button type='submit' className={styles['purchase-button']}>예약하기</button>}
+                <Spinner isActive={active}/>
             </Form>
         </div>)
 }

@@ -10,14 +10,6 @@
     margin-bottom:4rem;
 }
 
-.purchase-form {
-    width: 100%;
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-
-}
-
 .flex-col {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

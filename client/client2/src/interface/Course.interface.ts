@@ -1,23 +1,24 @@
-import { Program } from "./Program.interface";
+import { IProgram } from "./Program.interface";
+import { Ptype } from "./Ptype.interface";
 
-export interface CourseWithThumbnail {
+export interface ICourseWithThumbnail {
     id: number;
     thumbnail: string;
     name: string;
     short_desc: string;
 }
 
-export interface CourseWithPrograms {
+export interface ICourseWithPrograms {
     id: number;
     thumbnail: string;
     name: string;
     short_desc: string;
     description: string;
-    programs: Program[]
-    priceinfos: Priceinfo[]
+    programs: IProgram[]
+    priceinfos: IPriceinfo[]
 }
 
-interface Priceinfo {
-    type: string;
+interface IPriceinfo {
+    type: Ptype;
     price: number;
 }

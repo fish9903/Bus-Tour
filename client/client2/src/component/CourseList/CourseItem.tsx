@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { CourseWithThumbnail } from '../../interface/Course.interface';
+import { ICourseWithThumbnail } from '../../interface/Course.interface';
 import styles from './CourseItem.module.css';
 
 
-const CourseItem: React.FC<CourseWithThumbnail> = (props) => {
+const CourseItem: React.FC<ICourseWithThumbnail> = (props) => {
     return (
         <Link to={`/detail/${props.id}`}
             className={styles['item']}>
