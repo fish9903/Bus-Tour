@@ -1,4 +1,4 @@
-import { redirect, useLoaderData, LoaderFunction } from "react-router-dom";
+import { redirect, useLoaderData, LoaderFunction, useNavigate } from "react-router-dom";
 import React, { useMemo, Fragment } from "react";
 
 import styles from './ConfirmPage.module.css';
@@ -22,11 +22,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 
 const ConfirmPage: React.FC = () => {
+    const navigate = useNavigate();
     const data = useLoaderData() as Ret;
     const course = data.course;
     const program = data.program;
     const user = data.user;
     const order_date = useMemo(() => data.order_date.toLocaleString('ko-KR'), [data.order_date]);
+    const up_date = useMemo(() => data.up_date?.toLocaleString('ko-KR') ?? "-", [data.up_date]);
 
     const person_table = useMemo(() => data.personinfos.map((it) => {
         const typename = costNames.get(it.type);
@@ -37,9 +39,13 @@ const ConfirmPage: React.FC = () => {
         return value;
     }), [data.personinfos])
 
+    const moveToCheckPage = () => {
+        navigate('/check');
+    }
+
     return (
         <div className={styles['page-layout']}>
-            <HeadLine content="예약 완료" />
+            <HeadLine content="구매 확인" />
             <CourseItem 
                 id={course.id}
                 name={course.name}
@@ -71,10 +77,16 @@ const ConfirmPage: React.FC = () => {
                 <div>{data.id}</div>
                 <div>주문 시각</div>
                 <div>{order_date}</div>
+                <div>주문 갱신 시각</div>
+                <div>{up_date}</div>
                 <div>결제수단 정보</div>
                 <div>{data.card_number}</div>
+                <div>주문 상태</div>
+                <div>{data.state}</div>
             </LineContainer>
-            <button type='submit' className={styles['purchase-button']}>조회 페이지로 이동</button>
+            <button 
+            className={styles['purchase-button']}
+            onClick={moveToCheckPage}>조회 페이지로 이동</button>
         </div>
     )
 }

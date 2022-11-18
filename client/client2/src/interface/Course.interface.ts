@@ -1,18 +1,18 @@
 import { IProgram } from "./Program.interface";
 import { Ptype } from "./Ptype.interface";
 
-export interface ICourseWithThumbnail {
+
+
+export interface ICourseWithName {
     id: number;
+    name :string;
+}
+export interface ICourseWithThumbnail extends ICourseWithName {
     thumbnail: string;
-    name: string;
     short_desc: string;
 }
 
-export interface ICourseWithPrograms {
-    id: number;
-    thumbnail: string;
-    name: string;
-    short_desc: string;
+export interface ICourseWithPrograms extends ICourseWithThumbnail {
     description: string;
     programs: IProgram[]
     priceinfos: IPriceinfo[]

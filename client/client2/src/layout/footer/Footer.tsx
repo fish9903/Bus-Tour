@@ -44,7 +44,6 @@ const Footer: React.FC = (props) => {
                     <div>프론트엔드</div>
                 </CInfoItem>
             </CInfo>
-
         </footer>
     )
 };

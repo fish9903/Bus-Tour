@@ -7,6 +7,7 @@ import styles from './SearchPage.module.css';
 import axios from 'axios';
 import { ICourseWithThumbnail } from "../../interface/Course.interface";
 import { useLayoutEffect } from "react";
+import ConfirmModal from "../../component/modal/ConfirmModal";
 
 // loader의 return type 지정
 // useLoaderData는 어차피 unknown으로 되어 있어서 바꿔도 의미 없음.
@@ -43,7 +44,6 @@ const SearchPage: React.FC = (props) => {
             <SearchForm />
             <div hidden={!(navigation.state === 'loading')}>찾는중......</div>
             <CourseList list={data} />
-
         </div>
     )
 };

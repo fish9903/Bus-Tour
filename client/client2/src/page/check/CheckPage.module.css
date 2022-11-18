@@ -1,0 +1,35 @@
+.page-layout {
+    display: flex;
+    flex-flow: column wrap;
+    width:100%;
+
+    gap: 1rem;
+    padding: 0 100px;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom:4rem;
+}
+
+.flex-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.purchase-button {
+    text-align: center;
+    display: block;
+    padding: 10px 5px;
+    border:2px gray solid;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    background-color: white;
+    color:gray;
+    min-width:fit-content;
+    width: 40vw;
+}
+
+.purchase-button:is(:hover, :active) {
+    border-color:black;
+    color: black;
+}

@@ -11,6 +11,7 @@
     width: 100%;
     border-bottom: 1px gray solid;
     background-color: white;
+    z-index: 100; /*제일 위에 노출되도록*/
 }
 
 @media (width < 800px) {
