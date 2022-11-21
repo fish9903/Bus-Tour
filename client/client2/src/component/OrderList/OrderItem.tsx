@@ -11,13 +11,15 @@ interface IOrderItem {
 }
 
 const OrderItem: React.FC<IOrderItem> = (props) => {
+    const navigate = useNavigate();
     const item = props.item;
+    const disabled = props.item.state === 'canceled';
 
     const person_table = useMemo(() => item.personinfos.map((it) => {
         const typename = costNames.get(it.type);
         const value = <Fragment key={it.type}>
             <div>{typename}</div>
-            <div>{it.count}</div>
+            <div>{it.count} 명</div>
         </Fragment>
         return value;
     }), [item.personinfos])
@@ -35,6 +37,10 @@ const OrderItem: React.FC<IOrderItem> = (props) => {
             })
         }
     };
+
+    const goToRefundPage = () => {
+        navigate(`/refund/${item.id}`);
+    }
 
     return (
         <div className={styles['container']}>
@@ -63,8 +69,8 @@ const OrderItem: React.FC<IOrderItem> = (props) => {
                 </div>
             </div>
             <div className={styles['button-container']}>
-                <button onClick={printTicket}>표 출력</button>
-                <button>환불하기</button>
+                <button disabled={disabled} onClick={printTicket}>표 출력</button>
+                <button disabled={disabled} onClick={goToRefundPage}>환불하기</button>
             </div>
         </div>
     )

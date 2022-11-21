@@ -15,21 +15,33 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
-.purchase-button {
-    text-align: center;
-    display: block;
-    padding: 10px 5px;
-    border:2px gray solid;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    text-decoration: none;
+.button {
+    width: 80px;
+    height: 25px;
     background-color: white;
-    color:gray;
-    min-width:fit-content;
-    width: 40vw;
+    border: 1px gray solid;
+    border-radius: 5px;
 }
 
-.purchase-button:is(:hover, :active) {
-    border-color:black;
-    color: black;
+.button:is(:hover,:active) {
+    border-width:1.6px;
+    border-color:rgb(71, 71, 71);
+}
+
+.input_form {
+    width: 100%;
+    display: flex;
+    flex-flow:row nowrap;
+    gap: 1rem;
+}
+/* 
+.input_form > div {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+} */
+
+.fill {
+    min-width: 100%;
+    display: flex;
 }

@@ -54,11 +54,13 @@ const CheckPage: React.FC = () => {
     return (
         <div className={styles['page-layout']}>
             <HeadLine content="구매내역 조회" />
-            <LineContainer title="구매자 정보">
+            <LineContainer title="구매자 정보"
+                grid={false}>
                 <Form
                     id='check-form'
                     role='search'
-                    method='get'>
+                    method='get'
+                    className={styles['input_form']}>
                     <label htmlFor='username'>이름</label>
                     <input
                         id='username'
@@ -70,7 +72,7 @@ const CheckPage: React.FC = () => {
                         id='pno'
                         name='pno'
                         placeholder='구매자 전화번호' />
-                    <button>조회</button>
+                    <button className={styles['button']}>조회</button>
                 </Form>
             </LineContainer>
             <OrderList list={data} />

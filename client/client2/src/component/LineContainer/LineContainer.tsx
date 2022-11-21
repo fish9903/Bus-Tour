@@ -2,7 +2,8 @@ import styles from './LineContainer.module.css';
 
 interface LContainerProps {
     children?: React.ReactNode,
-    title?: string
+    title?: string,
+    grid?: boolean
 }
 
 const LineContainer: React.FC<LContainerProps> = (props) => {
@@ -12,7 +13,7 @@ const LineContainer: React.FC<LContainerProps> = (props) => {
                 {props.title}
             </h2>
             <div className={styles['line']}>
-                <div className={styles['lcc']}>
+                <div className={`${props.grid === undefined || props.grid === true ? styles['lcc'] : ''}`}>
                     {props.children}
                 </div>
             </div>

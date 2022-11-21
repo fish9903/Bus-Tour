@@ -10,6 +10,7 @@ import PurchasePage, {
   loader as PurchasePageLoader,
   // action as PurchasePageAction
 } from './page/purchase[id]/PurchasePage';
+import RefundPage, { loader as RefundPageLoader } from './page/refund[id]/RefundPage';
 import SearchPage, { loader as SearchPageLoader } from './page/search/SearchPage';
 
 const browserRouter = createBrowserRouter([
@@ -49,6 +50,11 @@ const browserRouter = createBrowserRouter([
             path: 'confirm/:id',
             element: <ConfirmPage />,
             loader: ConfirmPageLoader
+          },
+          {
+            path: 'refund/:id',
+            element: <RefundPage />,
+            loader: RefundPageLoader
           },
           {
             path: 'error',

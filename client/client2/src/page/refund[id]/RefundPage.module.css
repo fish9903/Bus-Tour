@@ -10,19 +10,12 @@
     margin-bottom:4rem;
 }
 
-.purchase-form {
-    width: 100%;
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-}
-
 .flex-col {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 }
 
-.purchase-button {
+.refund-button {
     text-align: center;
     display: block;
     padding: 10px 5px;
@@ -36,7 +29,21 @@
     width: 40vw;
 }
 
-.purchase-button:is(:hover, :active) {
+.refund-button:is(:hover, :active) {
     border-color:black;
     color: black;
 }
+
+.refund-button:disabled {
+    background-color: rgb(207, 207, 207);
+    border-color: gray;
+    color: gray;
+}
+
+.fill {
+    width:100%;
+    display: flex;
+    flex-flow:column wrap;
+    align-items: center;
+}
+
