@@ -1,0 +1,12 @@
+.page-layout {
+    display: flex;
+    flex-flow: column wrap;
+    width:100%;
+
+    gap: 1rem;
+    padding: 0 100px;
+    justify-content: space-around;
+    align-items: center;
+    margin:4rem 0;
+
+}

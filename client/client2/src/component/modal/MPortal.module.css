@@ -10,6 +10,7 @@
     align-items: center;
 
     background-color: rgba(43, 43, 43, 0.7);
+    backdrop-filter: blur(1px);
     z-index: 101;
 }
 

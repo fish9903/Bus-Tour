@@ -1,8 +1,6 @@
 import { ICourseWithPrograms, ICourseWithThumbnail } from "./interface/Course.interface";
 import { IOrderWithCourseInfo } from "./interface/Order.interface";
 
-let fakeCache = new Map<string, boolean>();
-
 const cities = ['서울', '경상도 대구', '경상도 부산', '경상도 울산', '전라도 전주',
   '전라도 광주', '전라도 여수', '경기도 파주', '경기도 고양', '강원도 강릉', '강원도 속초'];
 
