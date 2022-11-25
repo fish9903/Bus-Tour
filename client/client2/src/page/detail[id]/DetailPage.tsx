@@ -15,6 +15,7 @@ interface Ret extends ICourseWithPrograms { }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const id = params['id'] ?? "";
+    console.log(mockprogram);
     return mockprogram;
 }
 

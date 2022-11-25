@@ -18,7 +18,7 @@ fun Route.courseRoute() {
     route("server") {
         get {
             // 전체 course 출력
-            val allCourse = courseController.getAllwithProgram()
+            val allCourse = courseController.getAllwithThumbnail()
 
             call.respond(allCourse)
         }
