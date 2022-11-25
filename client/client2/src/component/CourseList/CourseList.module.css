@@ -1,0 +1,33 @@
+.course-list {
+    width: 52vw;
+
+} 
+
+.title {
+    padding: 2rem 0 1rem 0;
+}
+
+.list-container {
+    display: grid;
+    border: black 2px solid;
+    padding: 1rem 1rem;
+    grid-template-columns: repeat(3,1fr);
+    justify-content: space-between;
+
+    min-width:min-content;
+    gap : 1rem;
+
+    margin: 0 0 3rem 0;
+}
+
+@media (width < 1480px) {
+    .list-container {
+        grid-template-columns: repeat(2,1fr);
+    }   
+}
+
+@media (width < 1000px) {
+    .list-container {
+        grid-template-columns: repeat(1,1fr);
+    }   
+}

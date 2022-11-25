@@ -1,0 +1,28 @@
+.info-container {
+    display: flex;
+    /* padding-left:1rem;  */
+    flex-flow: column wrap;
+    flex: 0;
+    gap: 0.7rem;
+    color: white;
+}
+
+.info-container::after {
+    content: "";
+    border-bottom: 2px white solid;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 550;
+    color: inherit;
+}
+
+.targets {
+    padding-left:1rem;
+    font-size: medium;
+    color: inherit;
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1rem;
+}

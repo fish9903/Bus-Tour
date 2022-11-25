@@ -1,0 +1,22 @@
+.info-item {
+    display: flex;
+    flex-flow: row wrap;
+    flex: 0;
+    column-gap: 1.5rem;
+    row-gap: 0.5rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    color: white;
+}
+
+.title {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: inherit;
+}
+
+.targets {
+    font-size: medium;
+    color: inherit;
+    text-align:end;
+}

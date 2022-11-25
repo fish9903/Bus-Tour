@@ -1,0 +1,61 @@
+.nav_item {
+    padding: 10px 5px;
+    border:3px gray solid;
+    border-radius: 10px;
+    /* animation: nav_leav 0.25s ease-in-out forwards; */
+    font-size: 1.2rem;
+}
+
+.nav_item:has(.active_nav) {
+    border-color: rgb(68, 68, 68);
+}
+
+@media (width < 500px) {
+    .nav_item {
+        width: 100%;
+    }
+}
+/*글자 색깔*/
+.active_nav {
+    color: black;
+}
+
+.nav {
+    color: gray;
+}
+
+.nav, .active_nav {
+    text-decoration: none;
+}
+
+.nav:is(:hover, :active) {
+    color: black;
+}
+
+/* .nav_item:hover, .nav_item:focus {
+    animation: nav_hov 0.25s ease-in-out forwards;
+}
+
+@keyframes nav_leav {
+    from {
+        transform: translateY(-10px);
+        border-color: black;
+    }
+
+    to {
+        transform: translateY(0px);
+        border-color: gray;
+    }
+}
+
+@keyframes nav_hov {
+    from {
+        transform: translateY(0px);
+        border-color: gray;
+    }
+
+    to {
+        transform: translateY(-10px);
+        border-color: black;
+    }
+} */

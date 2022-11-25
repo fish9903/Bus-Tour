@@ -1,0 +1,46 @@
+.modal {
+    background-color: white;
+    max-width: 50vw;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-title {
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.modal-content {
+    padding: 0.5rem;
+    border: gray 1px solid;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.modal-buttons>button {
+    margin: 1rem 0.5rem 0 0.5rem;
+}
+
+.confirm-message * {
+    margin: 0.2rem;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+/*드래그 css 알게된 곳.
+https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting*/

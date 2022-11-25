@@ -1,0 +1,24 @@
+.top_tab {
+    position: sticky;
+    top: -1px;
+
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 50px;
+    min-height: 50px;
+    width: 100%;
+    border-bottom: 1px gray solid;
+    background-color: white;
+    z-index: 100; /*제일 위에 노출되도록*/
+}
+
+@media (width < 800px) {
+    .top_tab {
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1.2rem;
+    }
+}
