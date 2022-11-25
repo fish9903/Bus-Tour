@@ -10,16 +10,28 @@ import { costNames } from "../../util/costNames";
 import Spinner from "../../component/Spinner/Spinner";
 import { useSpinner } from "../../hooks/useSpinner";
 import { mockprogram } from "../../fakenet";
+import axios from "axios";
 
-interface Ret extends ICourseWithPrograms { }
+interface Ret extends ICourseWithPrograms {
+    data: ICourseWithPrograms,
+}
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const id = params['id'];
     if (!id) {
         redirect('error');
     }
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q') ?? "";
+    // 여기서 데이터 fetch 수행.
+    const res = await axios.get(`/server/courseDetail/${id}`);
+    const str = JSON.stringify(res.data);
+    const arr = JSON.parse(str);
 
-    return mockprogram;
+    console.log(arr);
+    console.log(mockprogram)
+
+    return arr;
 }
 
 // export const action: ActionFunction = async ({ request, params }) => {
@@ -87,7 +99,7 @@ const PurchasePage: React.FC = () => {
     const option_table = useMemo(() => data.programs.map(
         it => {
             const dept = it.dep_date.toLocaleString('ko-KR', dateOptions);
-            const ariv = it.ariv_date.toLocaleDateString('ko-KR', dateOptions);
+            const ariv = it.ariv_date.toLocaleString('ko-KR', dateOptions);
             const date = `${dept} ~ ${ariv}`;
             return <option value={it.id} key={it.id}>{date}</option>
         }

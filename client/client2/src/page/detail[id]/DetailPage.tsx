@@ -1,22 +1,33 @@
 import { useLoaderData, LoaderFunction, Link } from "react-router-dom";
 import HeadLine from "../../component/Headline/HeadLine";
 import ReactMarkdown from "react-markdown";
-import { ICourseWithPrograms } from "../../interface/Course.interface";
+import {ICourseWithPrograms, ICourseWithThumbnail} from "../../interface/Course.interface";
 
 import styles from './DetailPage.module.css';
 import { useMemo } from "react";
 import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
-import { mockprogram } from "../../fakenet";
+import {fakeNetwork, mockprogram} from "../../fakenet";
+import axios from "axios";
 
-interface Ret extends ICourseWithPrograms { }
+interface Ret extends ICourseWithPrograms {
+    data: ICourseWithPrograms,
+}
 
 
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const id = params['id'] ?? "";
-    console.log(mockprogram);
-    return mockprogram;
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q') ?? "";
+    // 여기서 데이터 fetch 수행.
+    const res = await axios.get(`/server/courseDetail/${id}`);
+    const str = JSON.stringify(res.data);
+    const arr = JSON.parse(str);
+    console.log(res.data);
+    console.log(arr);
+
+    return arr;
 }
 
 const DetailPage: React.FC = (props) => {

@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         arr = await fakeNetwork(query);
     }
     // 여기서 데이터 fetch 수행.
-    const res = await axios.get("/server");
+    const res = await axios.get("/server/searchCourse");
     const str = JSON.stringify(res.data);
     arr = JSON.parse(str);
     console.log(res.data);

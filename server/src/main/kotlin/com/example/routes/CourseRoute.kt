@@ -1,8 +1,11 @@
 import com.example.Controller.CourseController
+import com.example.entity.Program
 import com.example.models.busTourStorage
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
@@ -12,24 +15,33 @@ fun Route.courseRoute() {
     val courseController by closestDI().instance<CourseController>()
 
     get("/") {
-        call.respondRedirect("server")
+        //call.respondRedirect("server")
     }
 
-    route("server") {
+    route("server/searchCourse") {
         get {
-            // 전체 course 출력
+            // 쎰네일과 함께 course 출력
             val allCourse = courseController.getAllwithThumbnail()
 
             call.respond(allCourse)
         }
     }
-    route("server/busInfo") {// bus 정보 출력(id, name, size)
+    route("server/courseDetail/{id}") {
         get {
-            if (busTourStorage.isNotEmpty()) {
-                call.respond(busTourStorage)
-            } else {
-                call.respond("bus tour is empty")
-            }
+            // 상세 설명과 함께 course 출력
+            val id = call.parameters["id"]!!.toInt()
+            val allCourse = courseController.getProgramWithId(id).find{it.id == id}
+            val json = Json.encodeToString(allCourse)
+            println(json)
+            call.respond(json)
+        }
+    }
+    route("server/searchCourse") {
+        post {
+            // 쎰네일과 함께 course 출력
+            val allCourse = courseController.getAllwithThumbnail()
+
+            call.respond(allCourse)
         }
     }
 }
