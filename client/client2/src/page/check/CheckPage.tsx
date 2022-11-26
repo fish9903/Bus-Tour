@@ -30,45 +30,52 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     console.log(arr);
     if (username && pno) {
         arr.push(mockorder);
+
+        // 여러 정보를 가져오는 단계.
+        const orderData = await axios.get(`/server/searchPurchase/${username}/${pno}`);
+        const order_str = JSON.stringify(orderData.data);
+        const order_arr = JSON.parse(order_str);
+
+        const programData = await axios.get(`/server/searchProgram/${order_arr.ProgramId}`);
+        const program_str = JSON.stringify(programData.data);
+        const program_arr = JSON.parse(program_str);
+
+        const courseData = await axios.get(`/server/searchCourse/${program_arr.cid}`);
+        const course_str = JSON.stringify(courseData.data);
+        const course_arr = JSON.parse(course_str);
+
+        const userData = await axios.get(`/server/searchUser/${order_arr.userId}`);
+        const user_str = JSON.stringify(userData.data);
+        const user_arr = JSON.parse(user_str);
+
+        const jsonData = {
+            QRcode: order_arr.QRcode,
+            card_number: order_arr.card_number,
+            course: course_arr,
+            id: order_arr.id,
+            order_date: order_arr.ordered_date,
+            personinfos: order_arr.personinfos,
+            program: program_arr,
+            up_date: order_arr.up_date,
+            user: user_arr,
+            total_price: order_arr.total_price,
+        }
+
+        const jsonArray = []
+        jsonArray.push(jsonData);
+
+        console.log(jsonArray);
+        console.log(arr);
+
+        return {
+            data: jsonArray,
+            username: username ?? "",
+            pno: pno ?? ""
+        };
     }
-
-    // 여러 정보를 가져오는 단계.
-    const orderData = await axios.get(`/server/searchPurchase/${username}/${pno}`);
-    const order_str = JSON.stringify(orderData.data);
-    const order_arr = JSON.parse(order_str);
-
-    const programData = await axios.get(`/server/searchProgram/${order_arr.ProgramId}`);
-    const program_str = JSON.stringify(programData.data);
-    const program_arr = JSON.parse(program_str);
-
-    const courseData = await axios.get(`/server/searchCourse/${program_arr.cid}`);
-    const course_str = JSON.stringify(courseData.data);
-    const course_arr = JSON.parse(course_str);
-
-    const userData = await axios.get(`/server/searchUser/${order_arr.userId}`);
-    const user_str = JSON.stringify(userData.data);
-    const user_arr = JSON.parse(user_str);
-
-    const jsonData = {
-        QRcode: order_arr.QRcode,
-        card_number: order_arr.card_number,
-        course: course_arr,
-        id: order_arr.id,
-        order_date: order_arr.ordered_date,
-        personinfos: order_arr.personinfos,
-        program: program_arr,
-        up_date: order_arr.up_date,
-        user: user_arr,
-    }
-
-    const jsonArray = []
-    jsonArray.push(jsonData);
-
-    console.log(jsonArray);
-    console.log(arr);
 
     return {
-        data: jsonArray,
+        data: mockorder,
         username: username ?? "",
         pno: pno ?? ""
     };
