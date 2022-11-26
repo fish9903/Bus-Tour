@@ -1,13 +1,13 @@
 import { useLoaderData, LoaderFunction, Link } from "react-router-dom";
 import HeadLine from "../../component/Headline/HeadLine";
 import ReactMarkdown from "react-markdown";
-import {ICourseWithPrograms, ICourseWithThumbnail} from "../../interface/Course.interface";
+import { ICourseWithPrograms, ICourseWithThumbnail } from "../../interface/Course.interface";
 
 import styles from './DetailPage.module.css';
 import { useMemo } from "react";
 import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
-import {fakeNetwork, mockprogram} from "../../fakenet";
+import { fakeNetwork, mockprogram } from "../../fakenet";
 import axios from "axios";
 
 interface Ret extends ICourseWithPrograms {
@@ -24,8 +24,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const res = await axios.get(`/server/courseDetail/${id}`);
     const str = JSON.stringify(res.data);
     const arr = JSON.parse(str);
-    console.log(res.data);
-    console.log(arr);
+
+    for (let prog of arr.programs) {
+        prog.dep_date = new Date(prog.dep_date);
+        prog.ariv_date = new Date(prog.ariv_date);
+    } // 문자열로 들어오므로 Date로 가공한다.
 
     return arr;
 }
@@ -51,59 +54,59 @@ const DetailPage: React.FC = (props) => {
 
 
 
-            return (
-            <div className={styles['page-layout']}>
-                <span className={styles['headline']}>
-                    <HeadLine content={data.name} />
-                </span>
-                <div className={styles['desc-layout']}>
-                    <img className={styles['thumbnail']}
-                        src={data.thumbnail}
-                        alt={data.name} />
+    return (
+        <div className={styles['page-layout']}>
+            <span className={styles['headline']}>
+                <HeadLine content={data.name} />
+            </span>
+            <div className={styles['desc-layout']}>
+                <img className={styles['thumbnail']}
+                    src={data.thumbnail}
+                    alt={data.name} />
 
-                    <table className={styles['cost-table']}>
-                        <thead>
-                            <tr>
-                                <th colSpan={2}>가격</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {costtr}
-                        </tbody>
-                    </table>
+                <table className={styles['cost-table']}>
+                    <thead>
+                        <tr>
+                            <th colSpan={2}>가격</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {costtr}
+                    </tbody>
+                </table>
 
-                    <table className={styles['time-table']}>
-                        <thead>
-                            <tr>
-                                <th colSpan={2}>기간</th>
-                            </tr>
-                            <tr>
-                                <th>출발</th>
-                                <th>도착</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {timetr}
-                        </tbody>
-                    </table>
+                <table className={styles['time-table']}>
+                    <thead>
+                        <tr>
+                            <th colSpan={2}>기간</th>
+                        </tr>
+                        <tr>
+                            <th>출발</th>
+                            <th>도착</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {timetr}
+                    </tbody>
+                </table>
 
-                    <div className={styles['short-desc']}>
-                        <h3 className={styles['headline']}>간략한 설명</h3>
-                        <div>{data.short_desc}</div>
-                    </div>
-                </div>
-
-                <div className={styles['description']}>
-                    <h3 className={styles['headline']}>상세 설명</h3>
-                    <div className={styles['desc-text']}>
-                        <ReactMarkdown children={data.description} />
-                    </div>
-                </div>
-                <div className={styles['purchase-info']}>
-                    <Link to={`/purchase/${data.id}`} className={styles['purchase-button']}>예약하기</Link>
+                <div className={styles['short-desc']}>
+                    <h3 className={styles['headline']}>간략한 설명</h3>
+                    <div>{data.short_desc}</div>
                 </div>
             </div>
-            )
+
+            <div className={styles['description']}>
+                <h3 className={styles['headline']}>상세 설명</h3>
+                <div className={styles['desc-text']}>
+                    <ReactMarkdown children={data.description} />
+                </div>
+            </div>
+            <div className={styles['purchase-info']}>
+                <Link to={`/purchase/${data.id}`} className={styles['purchase-button']}>예약하기</Link>
+            </div>
+        </div>
+    )
 };
 
-            export default DetailPage;
+export default DetailPage;

@@ -9,8 +9,8 @@ import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
 import Spinner from "../../component/Spinner/Spinner";
 import { useSpinner } from "../../hooks/useSpinner";
-import { mockprogram } from "../../fakenet";
 import axios from "axios";
+import { cardno_input_regex, name_input_regex, pno_input_regex, valid_regex } from "../../util/regex";
 
 interface Ret extends ICourseWithPrograms {
     data: ICourseWithPrograms,
@@ -28,7 +28,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const str = JSON.stringify(res.data);
     const arr = JSON.parse(str);
 
-    console.log(arr);
+    for (let prog of arr.programs) {
+        prog.dep_date = new Date(prog.dep_date);
+        prog.ariv_date = new Date(prog.ariv_date);
+    } // 문자열로 들어오므로 Date로 가공한다.
+
     return arr;
 }
 
@@ -43,7 +47,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 const PurchasePage: React.FC = () => {
     const data = useLoaderData() as Ret;
     const navigate = useNavigate();
-    const {active, turnOn,turnOff} = useSpinner();
+    const { active, turnOn, turnOff } = useSpinner();
 
     const [id, setId] = useState<string>("");
     const [values, setValues] = useState<number[]>(() => {
@@ -54,6 +58,14 @@ const PurchasePage: React.FC = () => {
         return arr;
     });
 
+    const [cost, setCost] = useState(0);
+    const [cvalid, setCValid] = useState<boolean | null>(null);
+
+    const [uInput, setUInput] = useState<string[]>(['', '', '']);
+
+    const [uvalid, setUvalid] = useState<boolean[]>([false, false, false]);
+    const [total_valid, setTotalValid] = useState<boolean>(false);
+
     const costs = useMemo(() => {
         const arr: number[] = [];
         data.priceinfos.forEach(it => {
@@ -62,42 +74,12 @@ const PurchasePage: React.FC = () => {
         return arr;
     }, [data.priceinfos]);
 
-    const [cost, setCost] = useState(0);
-
-    const [cvalid, setCValid] = useState<boolean | null>(null);
     const remain_seat = useMemo(() => data.programs.filter(it => it.id === +id)[0]?.rem_count ?? -1, [data.programs, id]);
     const full_seat = useMemo(() => data.programs.filter(it => it.id === +id)[0]?.max_count ?? -1, [data.programs, id]);
-
-
-    const calculateCost = useCallback(() => {
-        const total_cost = values.reduce((prev, cur, idx) => prev + cur * costs[idx], 0);
-        setCost(total_cost);
-    }, [values, costs])
-
-    const countValidation = useCallback(() => {
-        if (remain_seat === -1) {
-            setCValid(null);
-            return;
-        }
-        const total = values.reduce((prev, cur) => prev + cur, 0);
-        if (total === 0) {
-            setCValid(null);
-            return;
-        }
-        setCValid(() => total <= remain_seat);
-    }, [values, remain_seat]);
-
-
-    useEffect(() => {
-        countValidation();
-        calculateCost();
-    },
-        [countValidation, calculateCost]);
-
     const option_table = useMemo(() => data.programs.map(
         it => {
-            const dept = it.dep_date.toLocaleString('ko-KR', dateOptions);
-            const ariv = it.ariv_date.toLocaleString('ko-KR', dateOptions);
+            const dept = (new Date(it.dep_date)).toLocaleDateString('ko-KR', dateOptions);
+            const ariv = (new Date(it.ariv_date)).toLocaleString('ko-KR', dateOptions);
             const date = `${dept} ~ ${ariv}`;
             return <option value={it.id} key={it.id}>{date}</option>
         }
@@ -129,49 +111,52 @@ const PurchasePage: React.FC = () => {
         return value;
     }), [data.priceinfos, values, id])
 
-    const SubmitController : React.FormEventHandler<HTMLFormElement> = async (e) => {
+    const calculateCost = useCallback(() => {
+        const total_cost = values.reduce((prev, cur, idx) => prev + cur * costs[idx], 0);
+        setCost(total_cost);
+    }, [values, costs])
+
+    const countValidation = useCallback(() => {
+        if (remain_seat === -1) {
+            setCValid(null);
+            return;
+        }
+        const total = values.reduce((prev, cur) => prev + cur, 0);
+        if (total === 0) {
+            setCValid(null);
+            return;
+        }
+        setCValid(() => total <= remain_seat);
+    }, [values, remain_seat]);
+
+
+
+    useEffect(() => {
+        countValidation();
+        calculateCost();
+    }, [countValidation, calculateCost]);
+
+    useEffect(() => {
+        const match =valid_regex.map((val,idx) => val.test(uInput[idx]));
+        setUvalid(prev => match);
+    }, [uInput]);
+
+    useEffect(() => {
+        if (cvalid && uvalid.every((val) => { return val === true })) {
+            setTotalValid(true);
+        }
+    }, [cvalid, uvalid])
+
+    const SubmitController: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault(); // 제출하는거 일단 막기
         turnOn();
         const formdata = new FormData(e.currentTarget); //form data 추출
         const datalist = Object.fromEntries(formdata); // 추출한 데이터를 객체로 변환
         console.log(datalist);//  출력
 
-        const id = data.id
-        const res = await axios.get(`/server/courseDetail/${id}`);
-        const str = JSON.stringify(res.data);
-        const arr = JSON.parse(str);
-        console.log(arr);
-        //console.log(arr.programs[0]);
-        const ordered_date = arr.programs[0].dep_date;
-        console.log(ordered_date);
-        var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
-
-        // user 추가
-        // id는 어차피 DB에서 자동할당됨
-        axios.post("/server/addUser", {
-            id: data.id,
-            name: datalist.username,
-            phone_number: datalist.pnumber,
-        })
-
-        // order 추가
-        axios.post("/server/purchase", {
-            id: id.toString(),
-            ordered_date: ordered_date.toString(),
-            up_date: ordered_date.toString(),
-            state: "ok",
-            QRcode: "www.naver.com",
-            total_price: 100000,
-            card_number: "123123",
-            personinfos: person,
-            uid: 77,
-            pid:77,
-        })
-
-        turnOff();    
+        turnOff();
         // -> 주문 id 나옴
-        const orderid = 13;
-        navigate(`/confirm/${orderid}`,{replace: true});
+        // navigate(`/confirm/${orderid}`,{replace: true});
     }
 
     return (
@@ -179,9 +164,9 @@ const PurchasePage: React.FC = () => {
             <HeadLine content="예약" />
             <Form className={styles['purchase-form']}
                 method='post'
-            // action='/server/purchase'
-            // action 명시하면 대응되는 주소에 가서 작업 하는 것으로 보임.
-            onSubmit={SubmitController}
+                // action='/server/purchase'
+                // action 명시하면 대응되는 주소에 가서 작업 하는 것으로 보임.
+                onSubmit={SubmitController}
             >
                 <LineContainer title="상품 정보">
                     <div>상품 이름</div>
@@ -205,7 +190,7 @@ const PurchasePage: React.FC = () => {
                         {cost_table}
                         {cvalid !== null && (cvalid === true ?
                             <div>- 구매할 수 있습니다</div>
-                            : <div>- 구매할 수 없습니다</div>)}
+                            : <div className={styles['warning']}>- 구매할 수 없습니다</div>)}
                         {cvalid === null &&
                             <div>-</div>}
                     </div>
@@ -214,24 +199,65 @@ const PurchasePage: React.FC = () => {
                 </LineContainer>
                 <LineContainer title="고객 정보">
                     <label htmlFor="username">구매자 이름</label>
-                    <input type='text'
-                        id="username"
-                        name="username"
-                        placeholder="성함" />
+                    <span>
+                        <input type='text'
+                            id="username"
+                            name="username"
+                            placeholder="성함"
+                            value={uInput[0]}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (name_input_regex.test(val)) {
+                                    setUInput(prev => {
+                                        const cur = [...prev];
+                                        cur[0] = e.target.value;
+                                        return cur;
+                                    })
+                                }
+                            }} />
+                        {!uvalid[0] && <span className={styles['warning']}>{" *"}</span>}
+                    </span>
                     <label htmlFor="pnumber">휴대폰 번호</label>
-                    <input type='text'
-                        id="pnumber"
-                        name="pnumber"
-                        placeholder="-을 빼고 입력하세요" />
+                    <span>
+                        <input type='text'
+                            id="pnumber"
+                            name="pnumber"
+                            placeholder="-을 빼고 입력하세요 (5~16자)"
+                            value={uInput[1]}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (pno_input_regex.test(val)) {
+                                    setUInput(prev => {
+                                        const cur = [...prev];
+                                        cur[1] = e.target.value;
+                                        return cur;
+                                    })
+                                }
+                            }} />
+                             {!uvalid[1] && <span className={styles['warning']}>{" *"}</span>}
+                    </span>
                     <label htmlFor="cardinfo">결제수단 정보</label>
-                    <input type='text'
-                        id="cardinfo"
-                        name="cardinfo"
-                        placeholder="-을 빼고 입력하세요" />
-
+                    <span>
+                        <input type='text'
+                            id="cardinfo"
+                            name="cardinfo"
+                            placeholder="-을 빼고 입력 (14~16자)"
+                            value={uInput[2]} 
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (cardno_input_regex.test(val)) {
+                                    setUInput(prev => {
+                                        const cur = [...prev];
+                                        cur[2] = e.target.value;
+                                        return cur;
+                                    })
+                                }
+                            }}/>
+                             {!uvalid[2] && <span className={styles['warning']}>{" *"}</span>}
+                    </span>
                 </LineContainer>
-                {!active && <button type='submit' className={styles['purchase-button']}>예약하기</button>}
-                <Spinner isActive={active}/>
+                {!active && <button type='submit' disabled={!total_valid} className={styles['purchase-button']}>예약하기</button>}
+                <Spinner isActive={active} />
             </Form>
         </div>)
 }
