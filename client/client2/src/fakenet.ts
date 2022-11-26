@@ -96,7 +96,7 @@ export const mockorder: IOrderWithCourseInfo = {
   id: '1423-432432643-54354',
   card_number:'1234567890123456',
   order_date: new Date('2022-10-13T09:00:00-06:30'),
-  up_date:new Date('2022-10-13T09:00:00-06:30'),
+  up_date: new Date('2022-10-13T09:00:00-06:30'),
   personinfos: [
     {
       type:"p1",

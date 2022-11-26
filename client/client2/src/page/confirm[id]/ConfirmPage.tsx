@@ -8,17 +8,57 @@ import { costNames } from "../../util/costNames";
 import { IOrderWithCourseInfo } from "../../interface/Order.interface";
 import { mockorder } from "../../fakenet";
 import CourseItem from "../../component/CourseList/CourseItem";
+import axios from "axios";
 
 
 interface Ret extends IOrderWithCourseInfo { }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-    const id = params['id'];
+    const id = params['id']; // order id
     if (!id) {
         redirect('error');
     }
 
-    return mockorder;
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q') ?? "";
+    // 여기서 데이터 fetch 수행.
+    const orderData = await axios.get(`/server/purchase/${id}`);
+    const order_str = JSON.stringify(orderData.data);
+    const order_arr = JSON.parse(order_str);
+
+    const programData = await axios.get(`/server/searchProgram/${order_arr.ProgramId}`);
+    const program_str = JSON.stringify(programData.data);
+    const program_arr = JSON.parse(program_str);
+
+    const courseData = await axios.get(`/server/searchCourse/${program_arr.cid}`);
+    const course_str = JSON.stringify(courseData.data);
+    const course_arr = JSON.parse(course_str);
+
+    const userData = await axios.get(`/server/searchUser/${order_arr.userId}`);
+    const user_str = JSON.stringify(userData.data);
+    const user_arr = JSON.parse(user_str);
+
+    console.log(program_arr)
+    console.log(order_arr)
+
+    const jsonData = {
+        id: order_arr.id,
+        card_number: order_arr.card_number,
+        order_date: order_arr.ordered_date,
+        up_date: order_arr.up_date,
+        personinfos: order_arr.personinfos,
+        QRcode: order_arr.QRcode,
+        state: order_arr.state,
+        total_price: order_arr.total_price,
+        program: program_arr,
+        course: course_arr,
+        user: user_arr,
+    }
+
+    console.log(jsonData)
+    console.log(mockorder)
+
+    return jsonData;
 }
 
 const ConfirmPage: React.FC = () => {

@@ -141,36 +141,86 @@ const PurchasePage: React.FC = () => {
         const str = JSON.stringify(res.data);
         const arr = JSON.parse(str);
         console.log(arr);
-        //console.log(arr.programs[0]);
-        const ordered_date = arr.programs[0].dep_date;
-        console.log(ordered_date);
-        var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
 
-        // user 추가
-        // id는 어차피 DB에서 자동할당됨
-        axios.post("/server/addUser", {
-            id: data.id,
+        var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
+        var personList = []
+        personList.push({
+            "type": "p1",
+            "count": datalist.p1,
+            "price_pp": data.priceinfos[0].price}
+        )
+        personList.push({
+            "type": "p2",
+            "count": datalist.p2,
+            "price_pp": data.priceinfos[1].price}
+        )
+        personList.push({
+            "type": "p3",
+            "count": datalist.p3,
+            "price_pp": data.priceinfos[2].price}
+        )
+        var totalPrice = 0
+        for(var i = 0; i < 3; i++){
+            // @ts-ignore
+            totalPrice = totalPrice + data.priceinfos[i].price * personList[i].count;
+        }
+        console.log(totalPrice);
+
+        // // user 추가
+        // // id는 DB에서 자동할당됨
+        // await axios.post("/server/addUser", {
+        //     id: data.id,
+        //     name: datalist.username,
+        //     phone_number: datalist.pnumber,
+        // })
+        //
+        // // order 추가
+        // // id는 DB에서 자동할당됨
+        // // 주문한 날짜(ordered_date), 갱신된 날짜(up_date)는 서버에서 현재 시간으로 계산됨
+        // var orderid
+        // await axios.post("/server/purchase", {
+        //     id: id.toString(),
+        //     ordered_date: " ",
+        //     up_date: " ",
+        //     state: "ok",
+        //     QRcode: "www.naver.com",
+        //     total_price: totalPrice,
+        //     card_number: datalist.cardinfo,
+        //     personinfos: personList,
+        // })
+        //     .then(res => {
+        //         // -> 주문 id 나옴
+        //         orderid = res.data.id;
+        //     })
+        var orderid
+        var programid = parseInt(datalist.id as string)
+        await axios.post("/server/allData", {
+            id: id.toString(),
             name: datalist.username,
             phone_number: datalist.pnumber,
-        })
-
-        // order 추가
-        axios.post("/server/purchase", {
-            id: id.toString(),
-            ordered_date: ordered_date.toString(),
-            up_date: ordered_date.toString(),
-            state: "ok",
+            card_number: datalist.cardinfo,
+            ordered_date: " ",
+            up_date: " ",
+            personinfos: personList,
             QRcode: "www.naver.com",
-            total_price: 100000,
-            card_number: "123123",
-            personinfos: person,
-            uid: 77,
-            pid:77,
+            state: "ok",
+            total_price: totalPrice,
+            programs: data.programs[programid - 1],
+            course: {
+                id: id.toString(),
+                name: data.name,
+                thumbnail: data.thumbnail,
+                short_desc: data.short_desc,
+            }
+        }).then(res => {
+            console.log(res.data)
+            //console.log(datalist.id)
+            orderid = res.data;
         })
 
-        turnOff();    
-        // -> 주문 id 나옴
-        const orderid = 13;
+        window.alert("예약 성공");
+
+        turnOff();
         navigate(`/confirm/${orderid}`,{replace: true});
     }
 

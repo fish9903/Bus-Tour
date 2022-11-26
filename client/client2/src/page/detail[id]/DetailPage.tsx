@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const res = await axios.get(`/server/courseDetail/${id}`);
     const str = JSON.stringify(res.data);
     const arr = JSON.parse(str);
-    console.log(res.data);
+    //console.log(res.data);
     console.log(arr);
 
     return arr;
