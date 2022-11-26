@@ -29,8 +29,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const arr = JSON.parse(str);
 
     console.log(arr);
-    console.log(mockprogram)
-
     return arr;
 }
 
@@ -131,13 +129,45 @@ const PurchasePage: React.FC = () => {
         return value;
     }), [data.priceinfos, values, id])
 
-    const submitController : React.FormEventHandler<HTMLFormElement> = (e) => {
+    const SubmitController : React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault(); // 제출하는거 일단 막기
         turnOn();
         const formdata = new FormData(e.currentTarget); //form data 추출
         const datalist = Object.fromEntries(formdata); // 추출한 데이터를 객체로 변환
         console.log(datalist);//  출력
-        // 이후 axios로 동작 요청하고, 다른 작업 가능
+
+        const id = data.id
+        const res = await axios.get(`/server/courseDetail/${id}`);
+        const str = JSON.stringify(res.data);
+        const arr = JSON.parse(str);
+        console.log(arr);
+        //console.log(arr.programs[0]);
+        const ordered_date = arr.programs[0].dep_date;
+        console.log(ordered_date);
+        var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
+
+        // user 추가
+        // id는 어차피 DB에서 자동할당됨
+        axios.post("/server/addUser", {
+            id: data.id,
+            name: datalist.username,
+            phone_number: datalist.pnumber,
+        })
+
+        // order 추가
+        axios.post("/server/purchase", {
+            id: id.toString(),
+            ordered_date: ordered_date.toString(),
+            up_date: ordered_date.toString(),
+            state: "ok",
+            QRcode: "www.naver.com",
+            total_price: 100000,
+            card_number: "123123",
+            personinfos: person,
+            uid: 77,
+            pid:77,
+        })
+
         turnOff();    
         // -> 주문 id 나옴
         const orderid = 13;
@@ -151,7 +181,7 @@ const PurchasePage: React.FC = () => {
                 method='post'
             // action='/server/purchase'
             // action 명시하면 대응되는 주소에 가서 작업 하는 것으로 보임.
-            onSubmit={submitController}
+            onSubmit={SubmitController}
             >
                 <LineContainer title="상품 정보">
                     <div>상품 이름</div>

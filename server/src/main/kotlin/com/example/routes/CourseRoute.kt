@@ -1,7 +1,10 @@
 import com.example.Controller.CourseController
-import com.example.entity.Program
-import com.example.models.busTourStorage
+import com.example.Controller.OrderController
+import com.example.Controller.UserController
+import com.example.entity.Order
+import com.example.entity.User
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
@@ -13,6 +16,8 @@ import org.kodein.di.ktor.closestDI
 fun Route.courseRoute() {
     // course에 대한 작업은 이 controller가 전담(싱글톤 패턴 적용된 상태)
     val courseController by closestDI().instance<CourseController>()
+    val orderController by closestDI().instance<OrderController>()
+    val userController by closestDI().instance<UserController>()
 
     get("/") {
         //call.respondRedirect("server")
@@ -30,18 +35,28 @@ fun Route.courseRoute() {
         get {
             // 상세 설명과 함께 course 출력
             val id = call.parameters["id"]!!.toInt()
-            val allCourse = courseController.getProgramWithId(id).find{it.id == id}
+            val allCourse = courseController.getAllWtichProgram().find{it.id == id}
             val json = Json.encodeToString(allCourse)
             println(json)
             call.respond(json)
         }
     }
-    route("server/searchCourse") {
+    route("server/purchase") {
         post {
-            // 쎰네일과 함께 course 출력
-            val allCourse = courseController.getAllwithThumbnail()
-
-            call.respond(allCourse)
+            val order = call.receive<Order>()
+            println("오더>>")
+            println(order)
+            orderController.addOrder(order)
+            call.respond(order)
+        }
+    }
+    route("server/addUser") {
+        post {
+            val user = call.receive<User>()
+            println("유저>>")
+            println(user)
+            userController.addUser(user)
+            call.respond("user added correctly")
         }
     }
 }

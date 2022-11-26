@@ -1,9 +1,12 @@
 package com.example.entity
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
@@ -20,7 +23,7 @@ import java.util.UUID
  * @property user (uid: 외래키). 오더에 연결된 유저를 의미
  * @property program (pid: 외래키). 오더에 연결된 프로그램을 의미
  */
-object Orders : UUIDTable() {
+object Orders : IntIdTable() {
     val ordered_date = datetime("ordered_date")
     val up_date = datetime("up_date").nullable()
     val state = varchar("state", 10)
@@ -43,8 +46,8 @@ object Orders : UUIDTable() {
 }
 
 // 엔티티 영역
-class OrderEntity(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<OrderEntity>(Orders)
+class OrderEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<OrderEntity>(Orders)
 
     var ordered_date by Orders.ordered_date
     var up_date by Orders.up_date
@@ -71,7 +74,7 @@ class OrderEntity(id: EntityID<UUID>) : UUIDEntity(id) {
         this.card_number,
         personInfos.map {
             it.getPersonInfo()
-        }
+        },
     )
 }
 
@@ -85,5 +88,5 @@ data class Order(
     val QRcode: String,
     val total_price: Int,
     val card_number: String,
-    val personinfos: List<Personinfo>
+    val personinfos: List<Personinfo>,
 )

@@ -8,4 +8,6 @@ import org.kodein.di.singleton
 // controller bind 해줘야함
 fun DI.MainBuilder.bindControllers(){
     bind<CourseController>() with singleton { CourseController() }
+    bind<OrderController>() with singleton { OrderController() }
+    bind<UserController>() with singleton { UserController() }
 }

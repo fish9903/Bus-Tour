@@ -12,8 +12,7 @@ class CourseController {
         CourseEntity.all().map(CourseEntity::getCourseWithThumbnail)
     }
     // program과 함께 반환
-    fun getProgramWithId(id: Int): Iterable<CourseWithPrograms> = transaction {
-        //CourseEntity.findById(id).run{CourseEntity::getCourseWithPrograms}
+    fun getAllWtichProgram(): Iterable<CourseWithPrograms> = transaction {
         CourseEntity.all().with(
             CourseEntity::programs,
             CourseEntity::priceinfos
