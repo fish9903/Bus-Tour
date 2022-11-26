@@ -10,4 +10,5 @@ fun DI.MainBuilder.bindControllers(){
     bind<CourseController>() with singleton { CourseController() }
     bind<OrderController>() with singleton { OrderController() }
     bind<UserController>() with singleton { UserController() }
+    bind<ProgramController>() with singleton { ProgramController() }
 }

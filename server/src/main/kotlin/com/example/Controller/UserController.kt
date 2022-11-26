@@ -11,4 +11,7 @@ class UserController {
             this.phone_number = user.phone_number
         }
     }
+    fun getAll(): Iterable<User> = transaction {
+        UserEntity.all().map(UserEntity::getUser)
+    }
 }

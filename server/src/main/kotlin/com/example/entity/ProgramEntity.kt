@@ -58,7 +58,7 @@ class ProgramEntity(id: EntityID<Int>): IntEntity(id) {
         this.state,
         this.max_count,
         this.rem_count,
-        null
+        this.course.id.toString().toInt()
     )
 
     fun getProgramWithCid() = Program(
@@ -81,6 +81,5 @@ data class Program(
     val state: String,
     val max_count: Int,
     val rem_count: Int,
-    val cid: Int?
+    val cid: Int
 )
-

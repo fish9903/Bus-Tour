@@ -75,6 +75,8 @@ class OrderEntity(id: EntityID<Int>) : IntEntity(id) {
         personInfos.map {
             it.getPersonInfo()
         },
+        this.user.id.toString(),
+        this.program.id.toString()
     )
 }
 
@@ -89,4 +91,6 @@ data class Order(
     val total_price: Int,
     val card_number: String,
     val personinfos: List<Personinfo>,
+    val userId: String,
+    val ProgramId: String,
 )
