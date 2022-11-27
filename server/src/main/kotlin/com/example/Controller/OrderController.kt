@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class OrderController {
     // order 추가
     fun addOrder(order: Order, programId: Int, userName: String): OrderEntity = transaction {
-        val user = UserEntity.find{ Users.name eq userName}.find{ it.name == userName }!!
+        val user = UserEntity.find { Users.name eq userName }.find { it.name == userName }!!
 
         val newOrder = OrderEntity.new {
             this.ordered_date = LocalDateTime.now()
@@ -32,7 +32,7 @@ class OrderController {
         // personinfo 생성
         val size: Int = order.personinfos.size
         var personCount: Int = 0
-        for (i: Int in 0 until size){
+        for (i: Int in 0 until size) {
             PersoninfoEntity.new {
                 this.type = order.personinfos[i].type
                 this.count = order.personinfos[i].count
@@ -51,6 +51,39 @@ class OrderController {
         return@transaction newOrder
     }
 
+    fun addOrder2(
+        price: Int,
+        card_number: String,
+        program: ProgramEntity,
+        user: UserEntity,
+        personinfos: MutableList<Personinfo>
+    ): OrderEntity = transaction{
+        val charset = ('A'..'Z') + ('a'..'z') + ('0'..'9');
+        val qrpath = (1..15).map { charset.random() }.joinToString("")
+
+        val order = OrderEntity.new {
+            this.ordered_date = LocalDateTime.now();
+            this.up_date = LocalDateTime.now();
+            this.state = "ok";
+            this.QRCode = "http://some-path/QRCode/${qrpath}";
+            this.total_price = price
+            this.card_number = card_number
+            this.program = program
+            this.user = user
+        }
+
+        personinfos.forEach { it ->
+            PersoninfoEntity.new {
+                type = it.type;
+                count = it.count;
+                price_pp = it.price_pp;
+                oid = order;
+            }
+        }
+
+        return@transaction order;
+    }
+
     fun getAll(): Iterable<Order> = transaction {
         OrderEntity.all().with(
             OrderEntity::personInfos,
@@ -58,11 +91,11 @@ class OrderController {
     }
 
     fun getAll(id: Int): Array<Order?> = transaction {
-        val count = Orders.select{ Orders.user eq id }.count().toInt()
+        val count = Orders.select { Orders.user eq id }.count().toInt()
         val arr = Array<Order?>(count) { null }
 
         var i = 0
-        Orders.select{ Orders.user eq id }.forEach {
+        Orders.select { Orders.user eq id }.forEach {
             var temp = OrderEntity.findById(it[Orders.id])
             if (temp != null) {
                 arr[i] = temp.getOrder()
@@ -74,15 +107,15 @@ class OrderController {
     }
 
     fun refundAll(order: Order) = transaction {
-        Orders.update ({ Orders.id eq order.id.toInt() }) {
+        Orders.update({ Orders.id eq order.id.toInt() }) {
             it[state] = "expired"
         }
         val size: Int = order.personinfos.size
         var personCount: Int = 0
-        for (i: Int in 0 until size){
+        for (i: Int in 0 until size) {
             personCount += order.personinfos[i].count
         }
-        Orders.select{ Orders.id eq order.id.toInt() }.forEach {
+        Orders.select { Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
                 program.rem_count = program.rem_count + personCount
@@ -93,14 +126,14 @@ class OrderController {
     fun refund(order: Order, p1: Int, p2: Int, p3: Int) = transaction {
         val size: Int = order.personinfos.size
         var personCount: Int = 0
-        for (i: Int in 0 until size){
+        for (i: Int in 0 until size) {
             personCount += order.personinfos[i].count
         }
 
         var sum = p1 + p2 + p3
 
         // 부분 환불로 왔지만 전체 환불일 경우
-        if(personCount == sum){
+        if (personCount == sum) {
             refundAll(order)
             return@transaction
         }
@@ -110,7 +143,7 @@ class OrderController {
 
         var totalPrice = 0
         var p = null
-        Orders.select{ Orders.id eq order.id.toInt() }.forEach {
+        Orders.select { Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
                 // 남은 좌석 갱신
@@ -126,18 +159,18 @@ class OrderController {
                 totalPrice = totalPrice + price?.get(1)!!.price * p2
                 totalPrice = totalPrice + price?.get(2)!!.price * p3
 
-                Orders.update({Orders.id eq order.id.toInt()}) {
+                Orders.update({ Orders.id eq order.id.toInt() }) {
                     it[total_price] = totalPrice
                 }
 
                 // 해당 order의 personinfo 변경
-                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p1") } ) {
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p1") }) {
                     it[count] = p1
                 }
-                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p2") } ) {
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p2") }) {
                     it[count] = p2
                 }
-                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p3") } ) {
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p3") }) {
                     it[count] = p3
                 }
             }

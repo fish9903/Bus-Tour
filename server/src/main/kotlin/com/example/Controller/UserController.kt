@@ -8,23 +8,20 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserController {
-    fun addUser(user: User) = transaction {
-        var flag = false
+    fun addUser(username: String, phone_number: String): UserEntity = transaction {
 
-        val existingUser = UserEntity.find{ Users.name eq user.name and (Users.phone_number eq user.phone_number) }.find { it.name == user.name }
+        val existingUser = UserEntity.find{(Users.name eq username) and (Users.phone_number eq phone_number) }.limit(1);
+
         println(existingUser)
-        if(existingUser != null)
-            flag = true
-//        if(UserEntity.findById(user.name) != null) {
-//            flag = true
-//        }
-
-        if(!flag) {
-            UserEntity.new {
-                this.name = user.name
-                this.phone_number = user.phone_number
-            }
+        if(existingUser != null){
+            return@transaction existingUser.first();
         }
+
+        val user = UserEntity.new {
+                this.name = username
+                this.phone_number = phone_number
+            }
+        return@transaction user;
     }
     fun getAll(): Iterable<User> = transaction {
         UserEntity.all().map(UserEntity::getUser)
