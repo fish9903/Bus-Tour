@@ -149,8 +149,8 @@ fun Route.courseRoute() {
                 all.phone_number,
             )
             println("유저>>")
-            println(user)
             userController.addUser(user)
+            println(user)
 
             // create order
             val order = Order(
@@ -165,11 +165,11 @@ fun Route.courseRoute() {
                 "",
                 ""
             )
-            //println("오더>>")
-            //println(order)
             val orderid: EntityID<Int> = orderController.addOrder(order, all.programs.id, all.name).id
             val s = orderid.toString()
             val i = s.toInt()
+            println("오더>>")
+            println(order)
             call.respond(i)
         }
     }
@@ -181,29 +181,29 @@ fun Route.courseRoute() {
             val order = orderController.getAll().find{ it.id.toInt() == id }
             
             if (order != null) {
-                //println("전체 환불할 order>>")
-                //println(order)
-                //orderController.refundAll(order)
-//                transaction {
-//                    Orders.update ({ Orders.id eq id }) {
-//                        it[state] = "expired"
-//                    }
-//                    val size: Int = order.personinfos.size
-//                    var personCount: Int = 0
-//                    for (i: Int in 0 until size){
-//                        personCount += order.personinfos[i].count
-//                    }
-//                    Orders.select{ Orders.id eq id }.forEach {
-//                        val program = ProgramEntity.findById(it[Orders.program])
-//                        if (program != null) {
-//                            program.rem_count = program.rem_count + personCount
-//                        }
-//                    }
-//                }
-                orderController.refundAll(order, id)
+                orderController.refundAll(order)
 
                 //println("전체 환불후 order>>")
                 //println(order)
+                call.respond("ok")
+            }
+            call.respond("fail")
+        }
+    }
+    route("/server/{id}/refund/{p1}/{p2}/{p3}"){
+        get{
+            val id = call.parameters["id"]!!.toInt()
+            val p1 = call.parameters["p1"]!!.toInt()
+            val p2 = call.parameters["p2"]!!.toInt()
+            val p3 = call.parameters["p3"]!!.toInt()
+            val order = orderController.getAll().find{ it.id.toInt() == id }
+
+            if (order != null) {
+                orderController.refund(order, p1, p2, p3)
+
+                println("일부 환불후 order>>")
+                println(order)
+                println(order.id)
                 call.respond("ok")
             }
             call.respond("fail")

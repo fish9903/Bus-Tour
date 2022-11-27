@@ -149,6 +149,13 @@ const RefundPage: React.FC = (props) => {
         }
         else {
             console.log("일부 환불");
+            // var formData = new FormData(document.getElementById("#p1"));
+            var p1 = document.getElementById('p1') as HTMLInputElement | null;
+            var p2 = document.getElementById('p2') as HTMLInputElement | null;
+            var p3 = document.getElementById('p3') as HTMLInputElement | null;
+
+            var result = await axios.get(`/server/${id}/refund/${p1?.value}/${p2?.value}/${p3?.value}`);
+            console.log(result.data);
         }
 
         // 환불 성공하면

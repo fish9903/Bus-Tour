@@ -56,6 +56,6 @@ class PersoninfoEntity(id: EntityID<Int>) : IntEntity(id) {
 @Serializable
 data class Personinfo(
     val type: String,
-    val count: Int,
+    var count: Int,
     val price_pp: Int
 )

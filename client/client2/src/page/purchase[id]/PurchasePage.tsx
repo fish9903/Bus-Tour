@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         prog.dep_date = new Date(prog.dep_date);
         prog.ariv_date = new Date(prog.ariv_date);
     } // 문자열로 들어오므로 Date로 가공한다.
-
+    console.log(arr);
     return arr;
 }
 
@@ -158,7 +158,7 @@ const PurchasePage: React.FC = () => {
         const res = await axios.get(`/server/courseDetail/${id}`);
         const str = JSON.stringify(res.data);
         const arr = JSON.parse(str);
-        console.log(arr);
+        console.log(arr.programs);
 
         var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
         var personList = []
@@ -211,7 +211,13 @@ const PurchasePage: React.FC = () => {
         //         orderid = res.data.id;
         //     })
         var orderid
-        var programid = parseInt(datalist.id as string)
+        var programid = 0;
+        for(let i = 0; i < arr.programs.length; i++) {
+            if(arr.programs[i].id == parseInt(datalist.id as string))
+                programid = i;
+        }
+
+        console.log(programid);
         await axios.post("/server/allData", {
             id: id.toString(),
             name: datalist.username,
@@ -223,13 +229,13 @@ const PurchasePage: React.FC = () => {
             QRcode: "www.naver.com",
             state: "ok",
             total_price: totalPrice,
-            programs: data.programs[programid - 1],
+            programs: data.programs[programid],
             course: {
                 id: id.toString(),
                 name: data.name,
                 thumbnail: data.thumbnail,
                 short_desc: data.short_desc,
-            }
+            },
         }).then(res => {
             console.log(res.data)
             //console.log(datalist.id)

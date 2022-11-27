@@ -1,10 +1,13 @@
 package com.example.Controller
 
 import com.example.entity.*
+import com.example.entity.Personinfos.count
+import com.example.entity.Personinfos.type
 import org.jetbrains.exposed.dao.entityCache
 import org.jetbrains.exposed.dao.flushCache
 import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -14,6 +17,7 @@ class OrderController {
     // order 추가
     fun addOrder(order: Order, programId: Int, userName: String): OrderEntity = transaction {
         val user = UserEntity.find{ Users.name eq userName}.find{ it.name == userName }!!
+
         val newOrder = OrderEntity.new {
             this.ordered_date = LocalDateTime.now()
             this.up_date = LocalDateTime.now()
@@ -69,8 +73,8 @@ class OrderController {
         return@transaction arr
     }
 
-    fun refundAll(order: Order, id: Int) = transaction {
-        Orders.update ({ Orders.id eq id }) {
+    fun refundAll(order: Order) = transaction {
+        Orders.update ({ Orders.id eq order.id.toInt() }) {
             it[state] = "expired"
         }
         val size: Int = order.personinfos.size
@@ -78,11 +82,64 @@ class OrderController {
         for (i: Int in 0 until size){
             personCount += order.personinfos[i].count
         }
-        Orders.select{ Orders.id eq id }.forEach {
+        Orders.select{ Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
                 program.rem_count = program.rem_count + personCount
             }
         }
+    }
+
+    fun refund(order: Order, p1: Int, p2: Int, p3: Int) = transaction {
+        val size: Int = order.personinfos.size
+        var personCount: Int = 0
+        for (i: Int in 0 until size){
+            personCount += order.personinfos[i].count
+        }
+
+        var sum = p1 + p2 + p3
+
+        // 부분 환불로 왔지만 전체 환불일 경우
+        if(personCount == sum){
+            refundAll(order)
+            return@transaction
+        }
+
+        // 진짜 부분 환불
+        order.personinfos[0].count = p1
+        order.personinfos[1].count = p2
+        order.personinfos[2].count = p3
+
+        var totalPrice = 0
+        var p = null
+        Orders.select{ Orders.id eq order.id.toInt() }.forEach {
+            val program = ProgramEntity.findById(it[Orders.program])
+            if (program != null) {
+                // 남은 좌석 갱신
+                program.rem_count = program.rem_count + sum
+
+                // total price 변경
+                val price = CourseEntity.findById(program.course.id)?.getCourseWithPrograms()?.priceinfos
+                totalPrice = totalPrice + price?.get(0)!!.price * p1
+                totalPrice = totalPrice + price?.get(1)!!.price * p2
+                totalPrice = totalPrice + price?.get(2)!!.price * p3
+
+                Orders.update({Orders.id eq order.id.toInt()}) {
+                    it[total_price] = totalPrice
+                }
+
+                // 해당 order의 personinfo 변경
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p1") } ) {
+                    it[count] = p1
+                }
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p2") } ) {
+                    it[count] = p2
+                }
+                Personinfos.update({ Personinfos.order eq order.id.toInt() and (Personinfos.type eq "p3") } ) {
+                    it[count] = p3
+                }
+            }
+        }
+
     }
 }
