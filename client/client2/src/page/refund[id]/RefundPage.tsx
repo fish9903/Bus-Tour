@@ -141,25 +141,25 @@ const RefundPage: React.FC = (props) => {
         setModal(false);
         const id = data.id;
         // 환불 로직 정의
-        // 전체 환불 -> order의 state를 ok -> expired로 변경
-        if(isAllRefund) {
-            console.log("전체 환불");
-            var result = await axios.get(`/server/${id}/refundAll`);
-            console.log(result.data);
-        }
-        else {
-            console.log("일부 환불");
-            // var formData = new FormData(document.getElementById("#p1"));
-            var p1 = document.getElementById('p1') as HTMLInputElement | null;
-            var p2 = document.getElementById('p2') as HTMLInputElement | null;
-            var p3 = document.getElementById('p3') as HTMLInputElement | null;
+        var p1 = document.getElementById('p1') as HTMLInputElement | null;
+        var p2 = document.getElementById('p2') as HTMLInputElement | null;
+        var p3 = document.getElementById('p3') as HTMLInputElement | null;
 
-            var result = await axios.get(`/server/${id}/refund/${p1?.value}/${p2?.value}/${p3?.value}`);
-            console.log(result.data);
+        console.log("환불")
+        var result = await axios.post(`/server/${id}/refund`, {
+            "p1": p1?.value,
+            "p2": p2?.value,
+            "p3": p3?.value,
+        })
+        if(result.data == "ok") {
+            // 환불 성공하면
+            navigate(`/confirm/${data.id}`,{replace: true});
         }
-
-        // 환불 성공하면
-        navigate(`/confirm/${data.id}`,{replace: true});
+        else if(result.data == "expired") {
+            // 이미 환불된 표 라면
+            window.alert("이미 전체 환불된 표 입니다.")
+            //navigate(`/check`,{replace: true});
+        }
 
         // 실패하면 에러 페이지로.
     }

@@ -8,6 +8,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -177,38 +178,39 @@ fun Route.courseRoute() {
 //            call.respond(13)
 //        }
 //    }
-    route("/server/{id}/refundAll") {
-        get {
-            val id = call.parameters["id"]!!.toInt()
-            val order = orderController.getAll().find { it.id.toInt() == id }
+    // 전체/부분 환불 로직
+    route("/server/{id}/refund") {
+        post {
+            @Serializable
+            data class pData(val p1: Int, val p2: Int, val p3: Int)
 
-            if (order != null) {
+            val data = call.receive<pData>()
+            val id = call.parameters["id"]!!.toInt()
+            val sum = data.p1 + data.p2 + data.p3
+            val order = orderController.getAll().find{ it.id.toInt() == id }!!
+
+            if(order.state == "expired") {
+                call.respond("expired")
+            }
+
+            val size: Int? = order.personinfos.size
+            var personCount: Int = 0
+
+            for (i: Int in 0 until size!!){
+                personCount += order.personinfos[i].count
+            }
+
+            // 전체 환불
+            if(sum == personCount) {
                 orderController.refundAll(order)
-
-                //println("전체 환불후 order>>")
-                //println(order)
-                call.respond("ok")
             }
-            call.respond("fail")
-        }
-    }
-    route("/server/{id}/refund/{p1}/{p2}/{p3}") {
-        get {
-            val id = call.parameters["id"]!!.toInt()
-            val p1 = call.parameters["p1"]!!.toInt()
-            val p2 = call.parameters["p2"]!!.toInt()
-            val p3 = call.parameters["p3"]!!.toInt()
-            val order = orderController.getAll().find { it.id.toInt() == id }
-
-            if (order != null) {
-                orderController.refund(order, p1, p2, p3)
-
-                println("일부 환불후 order>>")
-                println(order)
-                println(order.id)
-                call.respond("ok")
+            // 부분 환불
+            else {
+                val difference = personCount - sum
+                orderController.refund(order, data.p1, data.p2, data.p3, difference)
             }
-            call.respond("fail")
+
+            call.respond("ok")
         }
     }
 }
