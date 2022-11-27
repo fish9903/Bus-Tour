@@ -1,5 +1,5 @@
 import { useMemo, Fragment, useState, useEffect } from 'react';
-import { Form, LoaderFunction, redirect, useLoaderData, useNavigate } from 'react-router-dom';
+import { Form, LoaderFunction, redirect, useLoaderData, useNavigate, useActionData } from 'react-router-dom';
 import HeadLine from '../../component/Headline/HeadLine';
 import LineContainer from '../../component/LineContainer/LineContainer';
 import ConfirmModal from '../../component/modal/ConfirmModal';
@@ -159,7 +159,7 @@ const RefundPage: React.FC = (props) => {
         }
 
         // 환불 성공하면
-        navigate(`/confirm/${data.id}`,{replace: true, preventScrollReset:false});
+        navigate(`/confirm/${data.id}`,{replace: true});
 
         // 실패하면 에러 페이지로.
     }

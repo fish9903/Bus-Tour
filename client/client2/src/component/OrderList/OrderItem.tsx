@@ -13,7 +13,7 @@ interface IOrderItem {
 const OrderItem: React.FC<IOrderItem> = (props) => {
     const navigate = useNavigate();
     const item = props.item;
-    const disabled = props.item.state === 'canceled';
+    const disabled = props.item.state === 'canceled' || props.item.state === 'expired';
 
     const person_table = useMemo(() => item.personinfos.map((it) => {
         const typename = costNames.get(it.type);
