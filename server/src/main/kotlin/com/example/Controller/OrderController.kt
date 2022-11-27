@@ -106,9 +106,7 @@ class OrderController {
         }
 
         // 진짜 부분 환불
-        order.personinfos[0].count = p1
-        order.personinfos[1].count = p2
-        order.personinfos[2].count = p3
+        var difference = personCount - sum
 
         var totalPrice = 0
         var p = null
@@ -116,7 +114,11 @@ class OrderController {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
                 // 남은 좌석 갱신
-                program.rem_count = program.rem_count + sum
+//                program.rem_count = program.rem_count + sum
+                val calculate = program.rem_count + difference
+                Programs.update({ Programs.id eq it[Orders.program] }) {
+                    it[rem_count] = calculate
+                }
 
                 // total price 변경
                 val price = CourseEntity.findById(program.course.id)?.getCourseWithPrograms()?.priceinfos
