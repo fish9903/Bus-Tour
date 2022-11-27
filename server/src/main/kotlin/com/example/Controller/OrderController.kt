@@ -90,31 +90,11 @@ class OrderController {
         }
     }
 
-    fun refund(order: Order, p1: Int, p2: Int, p3: Int) = transaction {
-        val size: Int = order.personinfos.size
-        var personCount: Int = 0
-        for (i: Int in 0 until size){
-            personCount += order.personinfos[i].count
-        }
-
-        var sum = p1 + p2 + p3
-
-        // 부분 환불로 왔지만 전체 환불일 경우
-        if(personCount == sum){
-            refundAll(order)
-            return@transaction
-        }
-
-        // 진짜 부분 환불
-        var difference = personCount - sum
-
+    fun refund(order: Order, p1: Int, p2: Int, p3: Int, difference: Int) = transaction {
         var totalPrice = 0
-        var p = null
         Orders.select{ Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
-                // 남은 좌석 갱신
-//                program.rem_count = program.rem_count + sum
                 val calculate = program.rem_count + difference
                 Programs.update({ Programs.id eq it[Orders.program] }) {
                     it[rem_count] = calculate
