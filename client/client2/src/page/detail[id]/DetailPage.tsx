@@ -7,7 +7,6 @@ import styles from './DetailPage.module.css';
 import { useMemo } from "react";
 import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
-import { fakeNetwork, mockprogram } from "../../fakenet";
 import axios from "axios";
 
 interface Ret extends ICourseWithPrograms {

@@ -9,8 +9,9 @@ import { dateOptions } from "../../util/date-option";
 import { costNames } from "../../util/costNames";
 import Spinner from "../../component/Spinner/Spinner";
 import { useSpinner } from "../../hooks/useSpinner";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { cardno_input_regex, name_input_regex, pno_input_regex, valid_regex } from "../../util/regex";
+import { PCount, PurchaseInfo } from "../../interface/PurchaseInfo.interface";
 
 interface Ret extends ICourseWithPrograms {
     data: ICourseWithPrograms,
@@ -21,19 +22,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     if (!id) {
         redirect('error');
     }
-    const url = new URL(request.url);
-    const query = url.searchParams.get('q') ?? "";
     // 여기서 데이터 fetch 수행.
-    const res = await axios.get(`/server/courseDetail/${id}`);
-    const str = JSON.stringify(res.data);
-    const arr = JSON.parse(str);
-
-    for (let prog of arr.programs) {
+    const res = await axios.get<ICourseWithPrograms>(`/server/courseDetail/${id}`);
+    const data = res.data;
+    for (let prog of data.programs) {
         prog.dep_date = new Date(prog.dep_date);
         prog.ariv_date = new Date(prog.ariv_date);
     } // 문자열로 들어오므로 Date로 가공한다.
-    console.log(arr);
-    return arr;
+    return data;
 }
 
 // export const action: ActionFunction = async ({ request, params }) => {
@@ -137,7 +133,7 @@ const PurchasePage: React.FC = () => {
     }, [countValidation, calculateCost]);
 
     useEffect(() => {
-        const match =valid_regex.map((val,idx) => val.test(uInput[idx]));
+        const match = valid_regex.map((val, idx) => val.test(uInput[idx]));
         setUvalid(prev => match);
     }, [uInput]);
 
@@ -151,102 +147,40 @@ const PurchasePage: React.FC = () => {
         e.preventDefault(); // 제출하는거 일단 막기
         turnOn();
         const formdata = new FormData(e.currentTarget); //form data 추출
-        const datalist = Object.fromEntries(formdata); // 추출한 데이터를 객체로 변환
-        console.log(datalist);//  출력
 
-        const id = data.id
-        const res = await axios.get(`/server/courseDetail/${id}`);
-        const str = JSON.stringify(res.data);
-        const arr = JSON.parse(str);
-        console.log(arr.programs);
-
-        var person = [{"type": "p1", "count": 1, "price_pp": 1230}, {"type": "p2", "count": 3, "price_pp": 3330}];
-        var personList = []
-        personList.push({
-            "type": "p1",
-            "count": datalist.p1,
-            "price_pp": data.priceinfos[0].price}
-        )
-        personList.push({
-            "type": "p2",
-            "count": datalist.p2,
-            "price_pp": data.priceinfos[1].price}
-        )
-        personList.push({
-            "type": "p3",
-            "count": datalist.p3,
-            "price_pp": data.priceinfos[2].price}
-        )
-        var totalPrice = 0
-        for(var i = 0; i < 3; i++){
-            // @ts-ignore
-            totalPrice = totalPrice + data.priceinfos[i].price * personList[i].count;
-        }
-        console.log(totalPrice);
-
-        // // user 추가
-        // // id는 DB에서 자동할당됨
-        // await axios.post("/server/addUser", {
-        //     id: data.id,
-        //     name: datalist.username,
-        //     phone_number: datalist.pnumber,
-        // })
-        //
-        // // order 추가
-        // // id는 DB에서 자동할당됨
-        // // 주문한 날짜(ordered_date), 갱신된 날짜(up_date)는 서버에서 현재 시간으로 계산됨
-        // var orderid
-        // await axios.post("/server/purchase", {
-        //     id: id.toString(),
-        //     ordered_date: " ",
-        //     up_date: " ",
-        //     state: "ok",
-        //     QRcode: "www.naver.com",
-        //     total_price: totalPrice,
-        //     card_number: datalist.cardinfo,
-        //     personinfos: personList,
-        // })
-        //     .then(res => {
-        //         // -> 주문 id 나옴
-        //         orderid = res.data.id;
-        //     })
-        var orderid
-        var programid = 0;
-        for(let i = 0; i < arr.programs.length; i++) {
-            if(arr.programs[i].id == parseInt(datalist.id as string))
-                programid = i;
-        }
-
-        console.log(programid);
-        await axios.post("/server/allData", {
-            id: id.toString(),
-            name: datalist.username,
-            phone_number: datalist.pnumber,
-            card_number: datalist.cardinfo,
-            ordered_date: " ",
-            up_date: " ",
-            personinfos: personList,
-            QRcode: "www.naver.com",
-            state: "ok",
-            total_price: totalPrice,
-            programs: data.programs[programid],
-            course: {
-                id: id.toString(),
-                name: data.name,
-                thumbnail: data.thumbnail,
-                short_desc: data.short_desc,
-            },
-        }).then(res => {
-            console.log(res.data)
-            //console.log(datalist.id)
-            orderid = res.data;
-        })
-
-        window.alert("예약 성공");
-
+        const datalist: PurchaseInfo = {
+            pid: parseInt(formdata.get("id")?.toString() ?? ""),
+            card_number: formdata.get("cardinfo")?.toString() ?? "",
+            name: formdata.get("username")?.toString() ?? "",
+            phone_number: formdata.get("pnumber")?.toString() ?? "",
+            priceinfos: [
+                {
+                    type: "p1",
+                    count: parseInt(formdata.get("p1")?.toString() ?? "") ?? 0
+                },
+                {
+                    type: "p2",
+                    count: parseInt(formdata.get("p2")?.toString() ?? "") ?? 0
+                },
+                {
+                    type: "p3",
+                    count: parseInt(formdata.get("p3")?.toString() ?? "") ?? 0
+                }
+            ]
+        };
+        const post_res = await axios.post<PurchaseInfo>("/server/purchase", datalist);
         turnOff();
+
+        if (post_res.status === 200) {
+            const oid = post_res.data;
+            navigate(`/confirm/${oid}`, { replace: true });
+
+        }
+        else {
+
+        }
+
         // -> 주문 id 나옴
-        // navigate(`/confirm/${orderid}`,{replace: true});
     }
 
     return (
@@ -324,7 +258,7 @@ const PurchasePage: React.FC = () => {
                                     })
                                 }
                             }} />
-                             {!uvalid[1] && <span className={styles['warning']}>{" *"}</span>}
+                        {!uvalid[1] && <span className={styles['warning']}>{" *"}</span>}
                     </span>
                     <label htmlFor="cardinfo">결제수단 정보</label>
                     <span>
@@ -332,7 +266,7 @@ const PurchasePage: React.FC = () => {
                             id="cardinfo"
                             name="cardinfo"
                             placeholder="-을 빼고 입력 (14~16자)"
-                            value={uInput[2]} 
+                            value={uInput[2]}
                             onChange={(e) => {
                                 const val = e.target.value;
                                 if (cardno_input_regex.test(val)) {
@@ -342,8 +276,8 @@ const PurchasePage: React.FC = () => {
                                         return cur;
                                     })
                                 }
-                            }}/>
-                             {!uvalid[2] && <span className={styles['warning']}>{" *"}</span>}
+                            }} />
+                        {!uvalid[2] && <span className={styles['warning']}>{" *"}</span>}
                     </span>
                 </LineContainer>
                 {!active && <button type='submit' disabled={!total_valid} className={styles['purchase-button']}>예약하기</button>}

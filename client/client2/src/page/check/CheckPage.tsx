@@ -1,4 +1,4 @@
-import { useLoaderData, LoaderFunction, useNavigate, Form } from "react-router-dom";
+import { useLoaderData, LoaderFunction, useNavigate, Form, useNavigation } from "react-router-dom";
 import React, { useLayoutEffect } from "react";
 
 import styles from './CheckPage.module.css';
@@ -92,7 +92,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 
 const CheckPage: React.FC = () => {
-    const navigate = useNavigate();
+    const navigation = useNavigation();
     const { data, username, pno } = useLoaderData() as Ret;
 
     useLayoutEffect(() => {
@@ -126,6 +126,7 @@ const CheckPage: React.FC = () => {
                     <button className={styles['button']}>조회</button>
                 </Form>
             </LineContainer>
+            {navigation.state ==='loading'&&<div>찾는중 ...</div>}
             <OrderList list={data} />
         </div>
     )
