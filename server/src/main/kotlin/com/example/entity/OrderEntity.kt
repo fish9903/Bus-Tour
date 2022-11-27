@@ -86,7 +86,7 @@ data class Order(
     val id: String,
     val ordered_date: String,
     val up_date: String?,
-    val state: String,
+    var state: String,
     val QRcode: String,
     val total_price: Int,
     val card_number: String,

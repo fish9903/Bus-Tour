@@ -2,9 +2,7 @@ import com.example.Controller.CourseController
 import com.example.Controller.OrderController
 import com.example.Controller.ProgramController
 import com.example.Controller.UserController
-import com.example.entity.AllDataEntity
-import com.example.entity.Order
-import com.example.entity.User
+import com.example.entity.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -12,6 +10,9 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 
@@ -41,7 +42,7 @@ fun Route.courseRoute() {
             val id = call.parameters["id"]!!.toInt()
             val course = courseController.getAllwithThumbnail().find{it.id == id}
             val json = Json.encodeToString(course)
-            println(json)
+            //println(json)
             call.respond(json)
         }
     }
@@ -51,7 +52,7 @@ fun Route.courseRoute() {
             val id = call.parameters["id"]!!.toInt()
             val courseDetail = courseController.getAllWtichProgram().find{it.id == id}
             val json = Json.encodeToString(courseDetail)
-            println(json)
+            //println(json)
             call.respond(json)
         }
     }
@@ -61,7 +62,7 @@ fun Route.courseRoute() {
             val id = call.parameters["id"]!!.toInt()
             val program = programController.getAll().find{it.id == id}
             val json = Json.encodeToString(program)
-            println(json)
+            //println(json)
             call.respond(json)
         }
     }
@@ -70,7 +71,7 @@ fun Route.courseRoute() {
             val id = call.parameters["id"]!!.toInt()
             val user = userController.getAll().find{it.id == id}
             val json = Json.encodeToString(user)
-            println(json)
+            //println(json)
             call.respond(json)
         }
     }
@@ -80,9 +81,13 @@ fun Route.courseRoute() {
             val userName = call.parameters["userName"]!!.toString()
             val phoneNumber = call.parameters["phoneNumber"]!!.toString()
             val user = userController.getAll().find{(it.name == userName) && (it.phone_number == phoneNumber)}
-            val order = orderController.getAll().find{it.userId == user?.id.toString()}
-            val json = Json.encodeToString(order)
-            println(json)
+
+            var orderArr: Array<Order?>? = null
+            if (user != null) {
+                orderArr = orderController.getAll(user.id)
+            }
+            val json = Json.encodeToString(orderArr)
+
             call.respond(json)
         }
     }
@@ -116,8 +121,8 @@ fun Route.courseRoute() {
             val order = orderController.getAll().find{it.id.toInt() == id}
             val json = Json.encodeToString(order)
 
-            println("get all order>>")
-            println(json)
+            //println("get all order>>")
+            //println(json)
 
             call.respond(json)
         }
@@ -125,8 +130,8 @@ fun Route.courseRoute() {
     route("server/addUser") {
         post {
             val user = call.receive<User>()
-            println("유저>>")
-            println(user)
+            //println("유저>>")
+            //println(user)
             //userController.addUser(user)
             call.respond(13)
         }
@@ -160,12 +165,48 @@ fun Route.courseRoute() {
                 "",
                 ""
             )
-            println("오더>>")
-            println(order)
+            //println("오더>>")
+            //println(order)
             val orderid: EntityID<Int> = orderController.addOrder(order, all.programs.id, all.name).id
             val s = orderid.toString()
             val i = s.toInt()
             call.respond(i)
+        }
+    }
+    // 환불
+    // 전체 환불
+    route("/server/{id}/refundAll"){
+        get{
+            val id = call.parameters["id"]!!.toInt()
+            val order = orderController.getAll().find{ it.id.toInt() == id }
+            
+            if (order != null) {
+                //println("전체 환불할 order>>")
+                //println(order)
+                //orderController.refundAll(order)
+//                transaction {
+//                    Orders.update ({ Orders.id eq id }) {
+//                        it[state] = "expired"
+//                    }
+//                    val size: Int = order.personinfos.size
+//                    var personCount: Int = 0
+//                    for (i: Int in 0 until size){
+//                        personCount += order.personinfos[i].count
+//                    }
+//                    Orders.select{ Orders.id eq id }.forEach {
+//                        val program = ProgramEntity.findById(it[Orders.program])
+//                        if (program != null) {
+//                            program.rem_count = program.rem_count + personCount
+//                        }
+//                    }
+//                }
+                orderController.refundAll(order, id)
+
+                //println("전체 환불후 order>>")
+                //println(order)
+                call.respond("ok")
+            }
+            call.respond("fail")
         }
     }
 }

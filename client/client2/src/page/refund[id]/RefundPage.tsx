@@ -137,10 +137,19 @@ const RefundPage: React.FC = (props) => {
         setRefundType(prev => !prev);
     }
 
-    const refundHandler = () => {
+    const refundHandler = async () => {
         setModal(false);
+        const id = data.id;
         // 환불 로직 정의
-
+        // 전체 환불 -> order의 state를 ok -> expired로 변경
+        if(isAllRefund) {
+            console.log("전체 환불");
+            var result = await axios.get(`/server/${id}/refundAll`);
+            console.log(result.data);
+        }
+        else {
+            console.log("일부 환불");
+        }
 
         // 환불 성공하면
         navigate(`/confirm/${data.id}`,{replace: true, preventScrollReset:false});
