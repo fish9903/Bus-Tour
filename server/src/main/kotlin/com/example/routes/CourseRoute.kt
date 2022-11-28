@@ -87,9 +87,9 @@ fun Route.courseRoute() {
             if (user != null) {
                 orderArr = orderController.getAll(user.id)
             }
-            val json = Json.encodeToString(orderArr)
+            val result = Json.encodeToString(orderArr)
 
-            call.respond(json)
+            call.respond(result)
         }
     }
 
