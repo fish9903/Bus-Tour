@@ -117,6 +117,7 @@ class OrderController {
         }
         Orders.select { Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
+            // 남은 좌석 갱신
             if (program != null) {
                 program.rem_count = program.rem_count + personCount
             }
@@ -128,6 +129,7 @@ class OrderController {
         Orders.select{ Orders.id eq order.id.toInt() }.forEach {
             val program = ProgramEntity.findById(it[Orders.program])
             if (program != null) {
+                // 남은 좌석 갱신
                 val calculate = program.rem_count + difference
                 Programs.update({ Programs.id eq it[Orders.program] }) {
                     it[rem_count] = calculate

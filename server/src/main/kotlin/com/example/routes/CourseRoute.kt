@@ -29,7 +29,7 @@ fun Route.courseRoute() {
 
     route("server/searchCourse") {
         get {
-            // 쎰네일과 함께 course 출력
+            // course 정보 반환
             val allCourse = courseController.getAllwithThumbnail()
 
             call.respond(allCourse)
@@ -37,22 +37,24 @@ fun Route.courseRoute() {
     }
     route("server/searchCourse/{id}") {
         get {
-            // 상세 설명과 함께 course 출력
+            // order의 id로 찾은 course 정보 반환
             val id = call.parameters["id"]!!.toInt()
-            val course = courseController.getAllwithThumbnail().find { it.id == id }
-            val json = Json.encodeToString(course)
-            //println(json)
-            call.respond(json)
+            val course = Json.encodeToString(
+                courseController.getAllwithThumbnail().find { it.id == id }
+            )
+
+            call.respond(course)
         }
     }
     route("server/courseDetail/{id}") {
         get {
-            // 상세 설명과 함께 course 출력
+            // 상세 설명과 함께 course 반환
             val id = call.parameters["id"]!!.toInt()
-            val courseDetail = courseController.getAllWtichProgram().find { it.id == id }
-            val json = Json.encodeToString(courseDetail)
-            //println(json)
-            call.respond(json)
+            val courseDetail = Json.encodeToString(
+                courseController.getAllWtichProgram().find { it.id == id }
+            )
+
+            call.respond(courseDetail)
         }
     }
     // program 찾아서 반환
