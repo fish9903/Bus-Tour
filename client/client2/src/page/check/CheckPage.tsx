@@ -64,6 +64,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
                 card_number: order_arr[i].card_number,
                 course: course_arr,
                 id: order_arr[i].id,
+                state: order_arr[i].state,
                 order_date: order_arr[i].ordered_date,
                 personinfos: order_arr[i].personinfos,
                 program: program_arr,
