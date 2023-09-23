@@ -15,7 +15,7 @@ fun main(args: Array<String>){
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
-    dbTest("admin", "Copy8837?", "test")
+    dbTest("**", "**", "***")
     configureSerialization() // json 다루기
     configureRouting() // routing 다루기
     // controller 다루기
